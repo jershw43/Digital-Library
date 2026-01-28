@@ -1,0 +1,130 @@
+<h1 id="digital-library">Digital-Library</h1>
+<p>This is the project repository for the Digital Library senior
+project. The Digital Library is a web and mobile based application that
+allows users to scan or enter books into a personalized library. In
+addition to the digital bookshelf, the Digital Library provides AI
+reccommendations based on the books in a user’s bookshelf.</p>
+<h1 id="team-setup-guide-digital-library">Team Setup Guide – Digital
+Library</h1>
+<p>This guide gets all contributors (Mac &amp; Windows) onto the same
+development environment. Follow <strong>every step in
+order</strong>.</p>
+<hr />
+<h2 id="required-downloads">1) Required Downloads</h2>
+<h3 id="all-users">All Users</h3>
+<ol type="1">
+<li><p><strong>Git</strong></p>
+<ul>
+<li><p>Windows: <a
+href="https://git-scm.com/download/win">https://git-scm.com/download/win</a></p></li>
+<li><p>Mac (Homebrew):</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">brew</span> install git</span></code></pre></div></li>
+</ul></li>
+<li><p><strong>Node Version Manager (NVM)</strong> We standardize Node
+versions so everyone runs the same runtime.</p></li>
+</ol>
+<hr />
+<h2 id="install-node-version-locked">2) Install Node
+(Version-locked)</h2>
+<h3 id="mac">Mac</h3>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">brew</span> install nvm</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> ~/.nvm</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&#39;export NVM_DIR=&quot;$HOME/.nvm&quot;&#39;</span> <span class="op">&gt;&gt;</span> ~/.zshrc</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&#39;[ -s &quot;/opt/homebrew/opt/nvm/nvm.sh&quot; ] &amp;&amp; . &quot;/opt/homebrew/opt/nvm/nvm.sh&quot;&#39;</span> <span class="op">&gt;&gt;</span> ~/.zshrc</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> ~/.zshrc</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="ex">nvm</span> install <span class="at">--lts</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="ex">nvm</span> use <span class="at">--lts</span></span></code></pre></div>
+<p>Verify:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">node</span> <span class="at">-v</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> <span class="at">-v</span></span></code></pre></div>
+<hr />
+<h3 id="windows">Windows</h3>
+<ol type="1">
+<li><p>Install <strong>nvm-windows</strong>: <a
+href="https://github.com/coreybutler/nvm-windows/releases">https://github.com/coreybutler/nvm-windows/releases</a></p></li>
+<li><p>Open PowerShell as Administrator:</p></li>
+</ol>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>nvm install lts</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>nvm use lts</span></code></pre></div>
+<p>Verify:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>node <span class="op">-</span>v</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>npm <span class="op">-</span>v</span></code></pre></div>
+<hr />
+<h2 id="install-cursor">3) Install Cursor</h2>
+<p>All contributors must use Cursor for consistency.</p>
+<p>Download: <a href="https://cursor.sh">https://cursor.sh</a></p>
+<hr />
+<h2 id="clone-the-repository">4) Clone the Repository</h2>
+<p>Open Terminal (Mac) or PowerShell (Windows):</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/YOUR_ORG_OR_USER/digital-library.git</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> digital-library</span></code></pre></div>
+<hr />
+<h2 id="load-correct-node-version">5) Load Correct Node Version</h2>
+<p>From project root:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">nvm</span> use</span></code></pre></div>
+<p>This reads the <code>.nvmrc</code> file.</p>
+<hr />
+<h2 id="backend-setup">6) Backend Setup</h2>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> backend</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> install</span></code></pre></div>
+<p>Create environment file:</p>
+<p><code>backend/.env</code></p>
+<pre><code>PORT=5000</code></pre>
+<p>Start backend:</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">node</span> index.js</span></code></pre></div>
+<p>Verify: Open browser → <a
+href="http://localhost:5000">http://localhost:5000</a></p>
+<hr />
+<h2 id="frontend-setup">7) Frontend Setup</h2>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ../frontend</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> install</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run dev</span></code></pre></div>
+<p>Verify: Browser auto-opens → React starter page</p>
+<hr />
+<h2 id="required-git-workflow">8) Required Git Workflow</h2>
+<h3 id="create-feature-branch">Create Feature Branch</h3>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> checkout <span class="at">-b</span> feature/your-feature-name</span></code></pre></div>
+<h3 id="save-work">Save Work</h3>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add .</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;Describe change&quot;</span></span></code></pre></div>
+<h3 id="upload-branch">Upload Branch</h3>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> push <span class="at">--set-upstream</span> origin feature/your-feature-name</span></code></pre></div>
+<hr />
+<h2 id="pull-latest-changes-before-working">9) Pull Latest Changes
+(Before Working)</h2>
+<p>Every session:</p>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> checkout main</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> pull</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> checkout feature/your-feature-name</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> merge main</span></code></pre></div>
+<hr />
+<h2 id="folder-structure-reference">11) Folder Structure Reference</h2>
+<pre><code>digital-library/
+ ├── backend/
+ │   ├── index.js
+ │   ├── package.json
+ │   └── .env
+ ├── frontend/
+ │   ├── package.json
+ │   ├── src/
+ │   └── ...
+ ├── .gitignore
+ ├── README.md
+ └── .nvmrc</code></pre>
