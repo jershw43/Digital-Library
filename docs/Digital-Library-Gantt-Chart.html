@@ -1,0 +1,153 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      <meta name="generator" content="PhpSpreadsheet, https://github.com/PHPOffice/PhpSpreadsheet">
+      <meta name="author" content="Camron S. Mellott" />
+    <style type="text/css">
+      html { font-family:Calibri, Arial, Helvetica, sans-serif; font-size:11pt; background-color:white }
+      a.comment-indicator:hover + div.comment { background:#ffd; position:absolute; display:block; border:1px solid black; padding:0.5em }
+      a.comment-indicator { background:red; display:inline-block; border:1px solid black; width:0.5em; height:0.5em }
+      div.comment { display:none }
+      table { border-collapse:collapse; page-break-after:always }
+      .gridlines td { border:1px dotted black }
+      .gridlines th { border:1px dotted black }
+      .b { text-align:center }
+      .e { text-align:center }
+      .f { text-align:right }
+      .inlineStr { text-align:left }
+      .n { text-align:right }
+      .s { text-align:left }
+      td.style0 { vertical-align:bottom; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; color:#000000; font-family:'Calibri'; font-size:11pt; background-color:white }
+      th.style0 { vertical-align:bottom; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; color:#000000; font-family:'Calibri'; font-size:11pt; background-color:white }
+      td.style1 { vertical-align:bottom; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; color:#000000; font-family:'Calibri'; font-size:11pt; background-color:white }
+      th.style1 { vertical-align:bottom; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; color:#000000; font-family:'Calibri'; font-size:11pt; background-color:white }
+      td.style2 { vertical-align:bottom; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; color:#000000; font-family:'Calibri'; font-size:11pt; background-color:white }
+      th.style2 { vertical-align:bottom; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; color:#000000; font-family:'Calibri'; font-size:11pt; background-color:white }
+      td.style3 { vertical-align:bottom; text-align:right; padding-right:0px; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; color:#000000; font-family:'Calibri'; font-size:11pt; background-color:white }
+      th.style3 { vertical-align:bottom; text-align:right; padding-right:0px; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; color:#000000; font-family:'Calibri'; font-size:11pt; background-color:white }
+      td.style4 { vertical-align:bottom; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; color:#000000; font-family:'Calibri'; font-size:11pt; background-color:#D8D8D8 }
+      th.style4 { vertical-align:bottom; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; color:#000000; font-family:'Calibri'; font-size:11pt; background-color:#D8D8D8 }
+      td.style5 { vertical-align:bottom; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; font-weight:bold; color:#4A7B29; font-family:'Calibri Light'; font-size:14pt; background-color:white }
+      th.style5 { vertical-align:bottom; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; font-weight:bold; color:#4A7B29; font-family:'Calibri Light'; font-size:14pt; background-color:white }
+      td.style6 { vertical-align:bottom; text-align:center; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; color:#000000; font-family:'Calibri'; font-size:11pt; background-color:white }
+      th.style6 { vertical-align:bottom; text-align:center; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; color:#000000; font-family:'Calibri'; font-size:11pt; background-color:white }
+      td.style7 { vertical-align:bottom; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; color:#FFFFFF; font-family:'Calibri'; font-size:11pt; background-color:white }
+      th.style7 { vertical-align:bottom; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; color:#FFFFFF; font-family:'Calibri'; font-size:11pt; background-color:white }
+      td.style8 { vertical-align:middle; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; font-weight:bold; color:#31521B; font-family:'Calibri Light'; font-size:20pt; background-color:white }
+      th.style8 { vertical-align:middle; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; font-weight:bold; color:#31521B; font-family:'Calibri Light'; font-size:20pt; background-color:white }
+      td.style9 { vertical-align:bottom; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; color:#000000; font-family:'Calibri'; font-size:11pt; background-color:#E2DFCC }
+      th.style9 { vertical-align:bottom; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; color:#000000; font-family:'Calibri'; font-size:11pt; background-color:#E2DFCC }
+      td.style10 { vertical-align:bottom; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; font-style:italic; color:#455F51; font-family:'Calibri'; font-size:10pt; background-color:white }
+      th.style10 { vertical-align:bottom; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; font-style:italic; color:#455F51; font-family:'Calibri'; font-size:10pt; background-color:white }
+      td.style11 { vertical-align:bottom; text-align:center; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; color:#000000; font-family:'Calibri'; font-size:11pt; background-color:white }
+      th.style11 { vertical-align:bottom; text-align:center; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; color:#000000; font-family:'Calibri'; font-size:11pt; background-color:white }
+      td.style12 { vertical-align:bottom; text-align:center; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; color:#000000; font-family:'Calibri'; font-size:11pt; background-color:white }
+      th.style12 { vertical-align:bottom; text-align:center; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; color:#000000; font-family:'Calibri'; font-size:11pt; background-color:white }
+      td.style13 { vertical-align:bottom; text-align:center; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; color:#000000; font-family:'Calibri'; font-size:11pt; background-color:white }
+      th.style13 { vertical-align:bottom; text-align:center; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; color:#000000; font-family:'Calibri'; font-size:11pt; background-color:white }
+      td.style14 { vertical-align:bottom; text-align:center; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; color:#000000; font-family:'Calibri'; font-size:11pt; background-color:white }
+      th.style14 { vertical-align:bottom; text-align:center; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; color:#000000; font-family:'Calibri'; font-size:11pt; background-color:white }
+      td.style15 { vertical-align:bottom; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; color:#000000; font-family:'Calibri'; font-size:11pt; background-color:#000000 }
+      th.style15 { vertical-align:bottom; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; color:#000000; font-family:'Calibri'; font-size:11pt; background-color:#000000 }
+      td.style16 { vertical-align:middle; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; font-weight:bold; color:#4A7B29; font-family:'Calibri'; font-size:12pt; background-color:white }
+      th.style16 { vertical-align:middle; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; font-weight:bold; color:#4A7B29; font-family:'Calibri'; font-size:12pt; background-color:white }
+      td.style17 { vertical-align:middle; text-align:left; padding-left:9px; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; font-weight:bold; color:#4A7B29; font-family:'Calibri'; font-size:12pt; background-color:white }
+      th.style17 { vertical-align:middle; text-align:left; padding-left:9px; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; font-weight:bold; color:#4A7B29; font-family:'Calibri'; font-size:12pt; background-color:white }
+      td.style18 { vertical-align:bottom; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; color:#000000; font-family:'Calibri'; font-size:11pt; background-color:white }
+      th.style18 { vertical-align:bottom; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; color:#000000; font-family:'Calibri'; font-size:11pt; background-color:white }
+      td.style19 { vertical-align:bottom; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; color:#000000; font-family:'Calibri'; font-size:11pt; background-color:white }
+      th.style19 { vertical-align:bottom; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; color:#000000; font-family:'Calibri'; font-size:11pt; background-color:white }
+      td.style20 { vertical-align:bottom; text-align:left; padding-left:18px; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; font-weight:bold; color:#4A7B29; font-family:'Calibri Light'; font-size:14pt; background-color:white }
+      th.style20 { vertical-align:bottom; text-align:left; padding-left:18px; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; font-weight:bold; color:#4A7B29; font-family:'Calibri Light'; font-size:14pt; background-color:white }
+      td.style21 { vertical-align:bottom; text-align:left; padding-left:18px; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; color:#000000; font-family:'Calibri'; font-size:11pt; background-color:white }
+      th.style21 { vertical-align:bottom; text-align:left; padding-left:18px; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; color:#000000; font-family:'Calibri'; font-size:11pt; background-color:white }
+      td.style22 { vertical-align:bottom; text-align:left; padding-left:18px; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; font-weight:bold; color:#455F51; font-family:'Calibri'; font-size:11pt; background-color:white }
+      th.style22 { vertical-align:bottom; text-align:left; padding-left:18px; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; font-weight:bold; color:#455F51; font-family:'Calibri'; font-size:11pt; background-color:white }
+      td.style23 { vertical-align:bottom; text-align:left; padding-left:18px; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; font-weight:bold; color:#455F51; font-family:'Calibri'; font-size:11pt; background-color:white }
+      th.style23 { vertical-align:bottom; text-align:left; padding-left:18px; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; font-weight:bold; color:#455F51; font-family:'Calibri'; font-size:11pt; background-color:white }
+      td.style24 { vertical-align:bottom; text-align:left; padding-left:18px; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; color:#000000; font-family:'Calibri'; font-size:11pt; background-color:white }
+      th.style24 { vertical-align:bottom; text-align:left; padding-left:18px; border-bottom:none #000000; border-top:none #000000; border-left:none #000000; border-right:none #000000; color:#000000; font-family:'Calibri'; font-size:11pt; background-color:white }
+      table.sheet0 col.col0 { width:374.13332904pt }
+      table.sheet0 tr { height:15pt }
+      table.sheet0 tr.row0 { height:50pt }
+      table.sheet0 tr.row1 { height:144pt }
+      table.sheet0 tr.row3 { height:256pt }
+      table.sheet0 tr.row5 { height:176pt }
+      table.sheet0 tr.row7 { height:80pt }
+      table.sheet0 tr.row8 { height:48pt }
+      table.sheet0 tr.row9 { height:64pt }
+      table.sheet0 tr.row10 { height:16pt }
+    </style>
+  </head>
+
+  <body>
+<style>
+@page { margin-left: 0.7in; margin-right: 0.7in; margin-top: 0.75in; margin-bottom: 0.75in; }
+body { margin-left: 0.7in; margin-right: 0.7in; margin-top: 0.75in; margin-bottom: 0.75in; }
+</style>
+    <table border="0" cellpadding="0" cellspacing="0" id="sheet0" class="sheet0">
+        <col class="col0">
+        <tbody>
+          <tr class="row0">
+            <td class="column0 style20 s">About this workbook</td>
+          </tr>
+          <tr class="row1">
+            <td class="column0 style21 s">Enter milestone and task information in the Milestones and Tasks worksheets.  To chart milestones along the timeline, enter 0 in the no. column, then, update the label position to be &quot;below&quot; to avoid overlapping labels.<br />
+<br />
+The position column in the milestone table, charts milestones within the task chart either on the same row or in stacked rows. To chart them on the same row, enter the same number in this column for each milestone. To chart them on different rows, enter different numbers. Sample data charts all milestones along the row position of 2.<br />
+</td>
+          </tr>
+          <tr class="row2">
+            <td class="column0 style22 s">Guide for screen readers</td>
+          </tr>
+          <tr class="row3">
+            <td class="column0 style21 s"><br />
+There are 5 worksheets in this workbook:<br />
+About<br />
+Milestones<br />
+Tasks<br />
+Gantt Chart<br />
+Dynamic Chart Data (Hidden)<br />
+<br />
+The instructions for each worksheet are in the A column starting in cell A1 of each worksheet. They are written with hidden text. Each step guides you through the information in that row. Each subsequent step continues in cell A2, A3, and so on, unless otherwise explicitly directed. For example, instruction text might say &quot;continue to cell A6&quot; for the next step. <br />
+<br />
+Hidden text will not print.<br />
+To remove these instructions from any worksheet, simply delete column A.<br />
+</td>
+          </tr>
+          <tr class="row4">
+            <td class="column0 style22 s">Dynamic Chart Data (Hidden)</td>
+          </tr>
+          <tr class="row5">
+            <td class="column0 style21 s"><br />
+Do not delete or modify content in the Hidden worksheet. Doing so could compromise the integrity of the Gantt Charting.<br />
+<br />
+Data may appear blank, dates may appear to be incorrect, do not fill in, edit, delete or otherwise modify the data or you risk overwriting formulas and breaking the chart graphing capability.<br />
+<br />
+The DynamicMilestone table allows for 15 milestones to be charted. To chart more than 15, simply expand the table to accommodate your number. Remember, only add the actual milestone data in the Chart Data worksheet.<br />
+</td>
+          </tr>
+          <tr class="row6">
+            <td class="column0 style23 s">Tips</td>
+          </tr>
+          <tr class="row7">
+            <td class="column0 style21 s"><br />
+By default, milestones are charted on row 1 of the Gantt Chart using the Position column in the Chart Data worksheet, starting in cell C5. To chart milestones on different rows, simply change the number. <br />
+</td>
+          </tr>
+          <tr class="row8">
+            <td class="column0 style21 s">The default setting is to highlight today's date in the Gantt Chart. To no longer highlight Today's date, simply select &quot;no&quot; in the Chart Data worksheet in cell D2.<br />
+</td>
+          </tr>
+          <tr class="row9">
+            <td class="column0 style21 s">The Gantt Chart date timeline is charted with a gap of 5 dates between them. To change this, select the timeline in the Gantt Chart worksheet and select Format Axis. Change the Major unit from 5 to 1 or 10, for example. <br />
+</td>
+          </tr>
+          <tr class="row10">
+            <td class="column0 style21 s">This is the last instruction in this worksheet.</td>
+          </tr>
+        </tbody>
+    </table>
+  </body>
+</html>
