@@ -2,10 +2,12 @@ import React from 'react';
 
 const Home = () => {
   return (
-    <div style={{ marginTop: '100px', padding: '20px' }}>
-      
-      <p>Home Page: The search bar will go here</p>
-    </div>
+    <>
+      <form action="/search-results" method='get'> 
+        <input type="text" id="query" name="query" placeholder="Search for a book" />
+        <button type="submit">Search</button>
+      </form> 
+    </>
   );
 };
 
