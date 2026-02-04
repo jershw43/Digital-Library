@@ -2,9 +2,9 @@ import { useState } from 'react'
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom'
 import './App.css'
 import BannerHeader from './components/BannerHeader'
-import Home from './pages/Home'
-import Books from './pages/Books'
-import About from './pages/About'
+import Home from './pages/home'
+import Books from './pages/books'
+import About from './pages/about'
 
 // Create a wrapper component to use the navigate hook
 function AppContent() {
@@ -19,7 +19,7 @@ function AppContent() {
   return (
     <>
       <BannerHeader 
-        title="Welcome to the Digital Library"
+        title="Digital Library"
         menuItems={menuItems}
       />
       <Routes>
