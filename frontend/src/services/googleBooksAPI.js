@@ -1,4 +1,4 @@
-const API_KEY = 'AIzaSyDEJT8pXqL7gI9VZ_example_key'; // Replace with actual key
+const API_KEY = 'AIzaSyDIPgFFjdZgcTqx9pqo4QP5ELL01lhdy_k'; // Replace with actual key
 const BASE_URL = 'https://www.googleapis.com/books/v1/volumes';
 
 export const searchBooks = async (query, maxResults = 20) => {
