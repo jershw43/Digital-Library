@@ -1,197 +1,30 @@
-# Digital-Library
-This is the project repository for the Digital Library senior project. The Digital Library is a web and mobile based application that allows users to scan or enter books into a personalized library. In addition to the digital bookshelf, the Digital Library provides AI reccommendations based on the books in a user's bookshelf.
+Assignments: 
 
-# Team Setup Guide – Digital Library
+Josh: ( googleBooksAPI.js) (SearchBar.jsx)
 
-This guide gets all contributors (Mac & Windows) onto the same development environment.
-Follow **every step in order**.
+Set up the API service:
 
----
+- Set up the Google Books API service
+- Create functions to fetch books by search query
+- Handle API responses and errors
+- Create a search bar component with input field and search button
 
-## 1) Required Downloads
+Camron: (Books.jsx)
 
-### All Users
+Integrate the API into the Books page 
 
-1. **Git**
+- Integrate the API service into the Books page
+- Update state management to handle API data instead of sample data
+- Add loading states (spinner/skeleton)
+- Add error handling UI
+- Connect the search functionality to display results
 
-   * Windows: [https://git-scm.com/download/win](https://git-scm.com/download/win)
-   * Mac (Homebrew):
+Luke: (Library.jsx) (LibraryContext.jsx) (App.jsx)
 
-     ```bash
-     brew install git
-     ```
+Library page
 
-2. **Node Version Manager (NVM)**
-   We standardize Node versions so everyone runs the same runtime.
-
----
-
-## 2) Install Node (Version-locked)
-
-### Mac
-
-```bash
-brew install nvm
-mkdir ~/.nvm
-
-echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.zshrc
-echo '[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && . "/opt/homebrew/opt/nvm/nvm.sh"' >> ~/.zshrc
-
-source ~/.zshrc
-
-nvm install --lts
-nvm use --lts
-```
-
-Verify:
-
-```bash
-node -v
-npm -v
-```
-
----
-
-### Windows
-
-1. Install **nvm-windows**:
-   [https://github.com/coreybutler/nvm-windows/releases](https://github.com/coreybutler/nvm-windows/releases)
-
-2. Open PowerShell as Administrator:
-
-```powershell
-nvm install lts
-nvm use lts
-```
-
-Verify:
-
-```powershell
-node -v
-npm -v
-```
-
----
-
-## 3) Install Cursor
-
-All contributors must use Cursor for consistency.
-
-Download: [https://cursor.sh](https://cursor.sh)
-
----
-
-## 4) Clone the Repository
-
-Open Terminal (Mac) or PowerShell (Windows):
-
-```bash
-git clone https://github.com/YOUR_ORG_OR_USER/digital-library.git
-cd digital-library
-```
-
----
-
-## 5) Load Correct Node Version
-
-From project root:
-
-```bash
-nvm use
-```
-
-This reads the `.nvmrc` file.
-
----
-
-## 6) Backend Setup
-
-```bash
-cd backend
-npm install
-```
-
-Create environment file:
-
-`backend/.env`
-
-```
-PORT=5000
-```
-
-Start backend:
-
-```bash
-node index.js
-```
-
-Verify:
-Open browser → [http://localhost:5000](http://localhost:5000)
-
----
-
-## 7) Frontend Setup
-
-```bash
-cd ../frontend
-npm install
-npm run dev
-```
-
-Verify:
-Browser auto-opens → React starter page
-
----
-
-## 8) Required Git Workflow
-
-### Create Feature Branch
-
-```bash
-git checkout -b feature/your-feature-name
-```
-
-### Save Work
-
-```bash
-git add .
-git commit -m "Describe change"
-```
-
-### Upload Branch
-
-```bash
-git push --set-upstream origin feature/your-feature-name
-```
-
----
-
-## 9) Pull Latest Changes (Before Working)
-
-Every session:
-
-```bash
-git checkout main
-git pull
-git checkout feature/your-feature-name
-git merge main
-```
-
----
-
-## 11) Folder Structure Reference
-
-```
-digital-library/
- ├── backend/
- │   ├── index.js
- │   ├── package.json
- │   └── .env
- ├── frontend/
- │   ├── package.json
- │   ├── src/
- │   └── ...
- ├── .gitignore
- ├── README.md
- └── .nvmrc
-```
+- Create a Library page to display saved books
+- Set up context/state management for the library
+- Implement "Add to Library" functionality
+- Implement "Remove from Library" functionality
+- Add localStorage to persist library data
