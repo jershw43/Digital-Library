@@ -1,33 +1,9 @@
 import React, { useState } from 'react';
-import { searchBooks } from '../services/googleBooksAPI';
-import SearchBar from '../components/SearchBar';
+import { useLibrary } from '../context/LibraryContext';
 
-const Books = () => {
-  const [books, setBooks] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+const Library = () => {
+  const { library, removeFromLibrary, clearLibrary } = useLibrary();
   const [selectedBook, setSelectedBook] = useState(null);
-  const [hasSearched, setHasSearched] = useState(false);
-
-  const handleSearch = async (query) => {
-    setLoading(true);
-    setError(null);
-    setHasSearched(true);
-    
-    try {
-      const results = await searchBooks(query);
-      setBooks(results);
-      
-      if (results.length === 0) {
-        setError('No books found. Try a different search term.');
-      }
-    } catch (err) {
-      setError('Failed to fetch books. Please try again.');
-      setBooks([]);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const openModal = (book) => {
     setSelectedBook(book);
@@ -37,23 +13,42 @@ const Books = () => {
     setSelectedBook(null);
   };
 
-  const addToLibrary = (book) => {
-    console.log('Adding to library:', book.title);
-    // This will be replaced with actual library context later
-    closeModal();
+  const handleRemove = (book) => {
+    if (window.confirm(`Remove "${book.title}" from your library?`)) {
+      removeFromLibrary(book.id);
+      closeModal();
+    }
   };
 
-  // Styles
+  // Styles (reusing from Books.jsx)
   const containerStyle = {
     marginTop: '100px',
     padding: '20px',
+  };
+
+  const headerContainerStyle = {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    maxWidth: '800px',
+    margin: '0 auto 20px',
+  };
+
+  const clearButtonStyle = {
+    backgroundColor: '#dc3545',
+    color: 'white',
+    border: 'none',
+    padding: '10px 20px',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    fontSize: '1rem',
   };
 
   const listStyle = {
     listStyleType: 'none',
     padding: '0',
     maxWidth: '800px',
-    margin: '20px auto',
+    margin: '0 auto',
   };
 
   const bookItemStyle = {
@@ -85,20 +80,6 @@ const Books = () => {
     flex: 1,
   };
 
-  const loadingStyle = {
-    textAlign: 'center',
-    padding: '40px',
-    fontSize: '1.2rem',
-    color: '#007bff',
-  };
-
-  const errorStyle = {
-    textAlign: 'center',
-    padding: '40px',
-    fontSize: '1.2rem',
-    color: '#dc3545',
-  };
-
   const emptyStateStyle = {
     textAlign: 'center',
     color: '#666',
@@ -106,7 +87,6 @@ const Books = () => {
     fontSize: '1.2rem',
   };
 
-  // Modal styles (same as before)
   const modalOverlayStyle = {
     position: 'fixed',
     top: 0,
@@ -152,8 +132,8 @@ const Books = () => {
     justifyContent: 'flex-end',
   };
 
-  const addButtonStyle = {
-    backgroundColor: '#007bff',
+  const removeButtonStyle = {
+    backgroundColor: '#dc3545',
     color: 'white',
     border: 'none',
     padding: '10px 20px',
@@ -176,38 +156,30 @@ const Books = () => {
 
   return (
     <div style={containerStyle}>
-      <h2>Books Page</h2>
-      <p>Search and browse our collection of books.</p>
-
-      <SearchBar onSearch={handleSearch} loading={loading} />
-
-      {loading && (
-        <div style={loadingStyle}>
-          <p>Searching for books...</p>
+      <div style={headerContainerStyle}>
+        <div>
+          <h2>My Library</h2>
+          <p>Your personal collection of saved books</p>
         </div>
-      )}
+        {library.length > 0 && (
+          <button
+            style={clearButtonStyle}
+            onClick={clearLibrary}
+            onMouseEnter={(e) => e.target.style.backgroundColor = '#c82333'}
+            onMouseLeave={(e) => e.target.style.backgroundColor = '#dc3545'}
+          >
+            Clear Library
+          </button>
+        )}
+      </div>
 
-      {error && !loading && (
-        <div style={errorStyle}>
-          <p>{error}</p>
-        </div>
-      )}
-
-      {!loading && !error && books.length === 0 && hasSearched && (
+      {library.length === 0 ? (
         <div style={emptyStateStyle}>
-          <p>No books found. Try a different search term.</p>
+          <p>Your library is empty. Start adding books from the Books page!</p>
         </div>
-      )}
-
-      {!loading && !error && books.length === 0 && !hasSearched && (
-        <div style={emptyStateStyle}>
-          <p>Use the search bar above to find books!</p>
-        </div>
-      )}
-
-      {!loading && books.length > 0 && (
+      ) : (
         <ul style={listStyle}>
-          {books.map((book) => (
+          {library.map((book) => (
             <li
               key={book.id}
               style={bookItemStyle}
@@ -270,12 +242,12 @@ const Books = () => {
                 Close
               </button>
               <button
-                style={addButtonStyle}
-                onClick={() => addToLibrary(selectedBook)}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#0056b3'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = '#007bff'}
+                style={removeButtonStyle}
+                onClick={() => handleRemove(selectedBook)}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#c82333'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = '#dc3545'}
               >
-                Add to Library
+                Remove from Library
               </button>
             </div>
           </div>
@@ -285,4 +257,4 @@ const Books = () => {
   );
 };
 
-export default Books;
+export default Library;

@@ -5,6 +5,8 @@ import BannerHeader from './components/BannerHeader'
 import Home from './pages/home'
 import Books from './pages/books'
 import About from './pages/about'
+import Library from './pages/Library'
+import { LibraryProvider } from './context/LibraryContext'
 
 // Create a wrapper component to use the navigate hook
 function AppContent() {
@@ -13,6 +15,7 @@ function AppContent() {
   const menuItems = [
     { label: 'Home', onClick: () => navigate('/') },
     { label: 'Books', onClick: () => navigate('/books') },
+    { label: 'Library', onClick: () => navigate('/library') },
     { label: 'About', onClick: () => navigate('/about') }
   ];
   
@@ -25,6 +28,7 @@ function AppContent() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/books" element={<Books />} />
+        <Route path="/library" element={<Library />} />
         <Route path="/about" element={<About />} />
       </Routes>
     </>
@@ -34,7 +38,9 @@ function AppContent() {
 function App() {
   return (
     <Router>
-      <AppContent />
+      <LibraryProvider>
+        <AppContent />
+      </LibraryProvider>
     </Router>
   );
 }
