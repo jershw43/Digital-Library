@@ -18,7 +18,8 @@
     "express": "^5.2.1",
     "mongodb": "^7.1.0",
     "mongood": "^0.0.5",
-    "mongoose": "^9.2.1"
+    "mongoose": "^9.2.1",
+    "prompt-sync": "^4.2.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.11"
