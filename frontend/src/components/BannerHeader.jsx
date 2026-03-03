@@ -1,38 +1,28 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
-const BannerHeader = ({ title, subtitle, menuItems }) => {
+const BannerHeader = ({ title, menuItems, user, onLogout, onLogin }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
-  };
-
-  // Inline styles for the banner
   const headerStyle = {
     backgroundColor: '#007bff',
     color: 'white',
     padding: '20px',
     textAlign: 'center',
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
     width: '100%',
     position: 'fixed',
-    top : '0',
+    top: '0',
     left: '0',
     zIndex: '1000',
+    boxSizing: 'border-box',
   };
 
   const titleStyle = {
-  margin: '0',
-  fontSize: '2.5rem',
-  paddingLeft: '60px', // Add this line to push the title to the right
-};
-
-  const subtitleStyle = {
-    margin: '5px 0 0',
-    fontSize: '1.2rem',
+    margin: '0',
+    fontSize: '2.5rem',
+    paddingLeft: '60px',
   };
 
-  // Hamburger menu styles
   const menuContainerStyle = {
     position: 'absolute',
     left: '20px',
@@ -55,6 +45,7 @@ const BannerHeader = ({ title, subtitle, menuItems }) => {
     height: '3px',
     backgroundColor: 'white',
     transition: 'all 0.3s',
+    display: 'block',
   };
 
   const dropdownStyle = {
@@ -62,7 +53,7 @@ const BannerHeader = ({ title, subtitle, menuItems }) => {
     top: '100%',
     left: '0',
     backgroundColor: 'white',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+    boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
     borderRadius: '4px',
     minWidth: '200px',
     marginTop: '10px',
@@ -77,33 +68,62 @@ const BannerHeader = ({ title, subtitle, menuItems }) => {
     transition: 'background-color 0.2s',
   };
 
-  const lastMenuItemStyle = {
-    ...menuItemStyle,
-    borderBottom: 'none',
+  // Auth section pinned to the right of the header
+  const authSectionStyle = {
+    position: 'absolute',
+    right: '20px',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+  };
+
+  const usernameStyle = {
+    color: 'white',
+    fontSize: '0.95rem',
+    fontWeight: '500',
+  };
+
+  const authButtonStyle = {
+    backgroundColor: 'white',
+    color: '#007bff',
+    border: 'none',
+    padding: '6px 16px',
+    borderRadius: '20px',
+    fontSize: '0.9rem',
+    fontWeight: '600',
+    cursor: 'pointer',
+    transition: 'opacity 0.2s',
   };
 
   return (
     <header style={headerStyle}>
-      {menuItems && menuItems.length > 0 && (
+      {/* Hamburger menu — left side */}
+      {menuItems?.length > 0 && (
         <div style={menuContainerStyle}>
-          <button style={hamburgerStyle} onClick={toggleMenu} aria-label="Menu">
-            <span style={barStyle}></span>
-            <span style={barStyle}></span>
-            <span style={barStyle}></span>
+          <button
+            style={hamburgerStyle}
+            onClick={() => setIsOpen(!isOpen)}
+            aria-label="Menu"
+          >
+            <span style={barStyle} />
+            <span style={barStyle} />
+            <span style={barStyle} />
           </button>
-          
+
           {isOpen && (
             <div style={dropdownStyle}>
-              {menuItems.map((item, index) => (
+              {menuItems.map((item, i) => (
                 <div
-                  key={index}
-                  style={index === menuItems.length - 1 ? lastMenuItemStyle : menuItemStyle}
-                  onMouseEnter={(e) => e.target.style.backgroundColor = '#f5f5f5'}
-                  onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
-                  onClick={() => {
-                    item.onClick();
-                    setIsOpen(false);
+                  key={i}
+                  style={{
+                    ...menuItemStyle,
+                    ...(i === menuItems.length - 1 ? { borderBottom: 'none' } : {}),
                   }}
+                  onMouseEnter={(e) => (e.target.style.backgroundColor = '#f5f5f5')}
+                  onMouseLeave={(e) => (e.target.style.backgroundColor = 'transparent')}
+                  onClick={() => { item.onClick(); setIsOpen(false); }}
                 >
                   {item.label}
                 </div>
@@ -112,9 +132,34 @@ const BannerHeader = ({ title, subtitle, menuItems }) => {
           )}
         </div>
       )}
-      
+
       <h1 style={titleStyle}>{title}</h1>
-      {subtitle && <p style={subtitleStyle}>{subtitle}</p>}
+
+      {/* Auth section — right side */}
+      <div style={authSectionStyle}>
+        {user ? (
+          <>
+            <span style={usernameStyle}>Hi, {user.username}!</span>
+            <button
+              style={authButtonStyle}
+              onClick={onLogout}
+              onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.85')}
+              onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
+            >
+              Log Out
+            </button>
+          </>
+        ) : (
+          <button
+            style={authButtonStyle}
+            onClick={onLogin}
+            onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.85')}
+            onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
+          >
+            Log In
+          </button>
+        )}
+      </div>
     </header>
   );
 };
