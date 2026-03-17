@@ -30,10 +30,9 @@ router.post('/', authMiddleware, async (req, res) => {
   if (!book?.id) return res.status(400).json({ message: 'Book data is required' });
 
   try {
-    // Upsert the book into the shared Book collection
-    await Book.findByIdAndUpdate(
-      book.id,
-      {
+    const existingBook = await Book.findById(book.id);
+    if (!existingBook) {
+      await Book.create({
         _id: book.id,
         title: book.title,
         author: book.author,
@@ -42,11 +41,10 @@ router.post('/', authMiddleware, async (req, res) => {
         description: book.description,
         publisher: book.publisher,
         pageCount: book.pageCount,
-      },
-      { upsert: true, new: true }
-    );
+      });
+    }
 
-    // Link this book to the user
+    // Link this book to the user (compound index prevents duplicates)
     const entry = new UserLibrary({ userId: req.userId, bookId: book.id });
     await entry.save();
 
