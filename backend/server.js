@@ -1,8 +1,15 @@
 const express = require('express');
 const cors = require('cors');
-require('dotenv').config();
-const connectDB = require('./config/db');
+const path = require('path');
 
+// Load .env explicitly from server.js directory
+require('dotenv').config({ path: path.join(__dirname, '.env') });
+
+// Confirm env loaded — remove these logs once working
+console.log('JWT_SECRET set:', !!process.env.JWT_SECRET);
+console.log('MONGODB_URI set:', !!process.env.MONGODB_URI);
+
+const connectDB = require('./config/db');
 const app = express();
 
 connectDB();
@@ -10,7 +17,7 @@ connectDB();
 app.use(cors({
   origin: 'http://localhost:5173',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'], // ← must explicitly allow Authorization
+  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 }));
 app.use(express.json());
@@ -28,7 +35,7 @@ try {
 }
 
 try {
-  const libraryRoutes = require('./routes/library');
+  const libraryRoutes = require('./libraryRoutes');
   app.use('/api/library', libraryRoutes);
   console.log('✅ Library routes loaded');
 } catch (err) {

@@ -8,15 +8,35 @@ export const useAuth = () => {
   return context;
 };
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);       // { username, token }
-  const [loading, setLoading] = useState(true); // prevents flash of wrong UI on refresh
+// Decode JWT payload without verifying signature (verification happens on the server)
+const getTokenExpiry = (token) => {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.exp * 1000; // convert to ms
+  } catch {
+    return null;
+  }
+};
 
-  // On app load, check if a token is already stored
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     const username = localStorage.getItem('username');
-    if (token && username) setUser({ token, username });
+
+    if (token && username) {
+      const expiry = getTokenExpiry(token);
+      if (expiry && Date.now() < expiry) {
+        // Token is still valid
+        setUser({ token, username });
+      } else {
+        // Token is expired — clear it so user gets redirected to login
+        localStorage.removeItem('token');
+        localStorage.removeItem('username');
+      }
+    }
     setLoading(false);
   }, []);
 
@@ -32,14 +52,14 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
-  // Attach the token to any fetch call automatically
   const authFetch = (url, options = {}) => {
+    const { headers, ...rest } = options;
     return fetch(url, {
-      ...options,
+      ...rest,
       headers: {
         'Content-Type': 'application/json',
         ...(user?.token && { Authorization: `Bearer ${user.token}` }),
-        ...options.headers,
+        ...headers,
       },
     });
   };
