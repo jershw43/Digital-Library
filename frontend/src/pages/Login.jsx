@@ -7,9 +7,7 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // If redirected from Register, show a success message
   const successMessage = location.state?.message;
-  // If redirected from a protected route, return there after login
   const returnTo = location.state?.from || '/';
 
   const [form, setForm] = useState({ email: '', password: '' });
@@ -24,11 +22,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-
-    if (!form.email || !form.password) {
-      setError('Please fill in all fields');
-      return;
-    }
+    if (!form.email || !form.password) { setError('Please fill in all fields'); return; }
 
     setLoading(true);
     try {
@@ -37,11 +31,9 @@ const Login = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       });
-
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Login failed');
-
-      login(data.token, data.username); // saves to context + localStorage
+      login(data.token, data.username);
       navigate(returnTo, { replace: true });
     } catch (err) {
       setError(err.message);
@@ -70,7 +62,6 @@ const Login = () => {
               autoComplete="email"
             />
           </div>
-
           <div style={styles.fieldWrapper}>
             <label style={styles.label}>Password</label>
             <input
@@ -82,13 +73,6 @@ const Login = () => {
               autoComplete="current-password"
             />
           </div>
-
-          <div style={styles.forgotRow}>
-            <Link to="/forgot-password" style={styles.forgotLink}>
-              Forgot password?
-            </Link>
-          </div>
-
           <button type="submit" style={styles.button} disabled={loading}>
             {loading ? 'Logging in...' : 'Log In'}
           </button>
@@ -103,37 +87,34 @@ const Login = () => {
 };
 
 const styles = {
-  page: {
-    marginTop: '100px',
-    display: 'flex',
-    justifyContent: 'center',
-    padding: '20px',
-  },
+  page: { marginTop: '100px', display: 'flex', justifyContent: 'center', padding: '20px' },
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: 'var(--surface)',
     borderRadius: '12px',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+    boxShadow: '0 4px 12px var(--shadow)',
     padding: '40px',
     width: '100%',
     maxWidth: '400px',
+    border: '1px solid var(--border)',
   },
-  title: { margin: '0 0 24px', color: '#007bff', textAlign: 'center' },
+  title: { margin: '0 0 24px', color: 'var(--accent)', textAlign: 'center' },
   form: { display: 'flex', flexDirection: 'column' },
   fieldWrapper: { display: 'flex', flexDirection: 'column', marginBottom: '16px' },
-  label: { marginBottom: '4px', fontWeight: '500', color: '#333', fontSize: '0.9rem' },
+  label: { marginBottom: '4px', fontWeight: '500', color: 'var(--text)', fontSize: '0.9rem' },
   input: {
     padding: '10px 14px',
     fontSize: '1rem',
-    border: '2px solid #ddd',
+    border: '2px solid var(--border)',
     borderRadius: '8px',
     outline: 'none',
-    color: '#ffffff',
+    backgroundColor: 'var(--bg-secondary)',
+    color: 'var(--input-color)',
+    transition: 'border-color 0.2s',
   },
-  forgotRow: { display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' },
-  forgotLink: { fontSize: '0.85rem', color: '#007bff' },
   button: {
+    marginTop: '8px',
     padding: '12px',
-    backgroundColor: '#007bff',
+    backgroundColor: 'var(--accent)',
     color: '#fff',
     border: 'none',
     borderRadius: '8px',
@@ -142,8 +123,8 @@ const styles = {
     cursor: 'pointer',
   },
   errorMsg: {
-    backgroundColor: '#fdecea',
-    color: '#dc3545',
+    backgroundColor: 'color-mix(in srgb, var(--danger) 15%, transparent)',
+    color: 'var(--danger)',
     padding: '10px 14px',
     borderRadius: '8px',
     marginBottom: '16px',
@@ -157,7 +138,7 @@ const styles = {
     marginBottom: '16px',
     fontSize: '0.9rem',
   },
-  switchText: { marginTop: '20px', textAlign: 'center', color: '#555', fontSize: '0.9rem' },
+  switchText: { marginTop: '20px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.9rem' },
 };
 
 export default Login;

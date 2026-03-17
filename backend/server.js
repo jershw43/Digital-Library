@@ -5,18 +5,16 @@ const connectDB = require('./config/db');
 
 const app = express();
 
-// Connect to MongoDB
 connectDB();
 
-// Middleware
 app.use(cors({
   origin: 'http://localhost:5173',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'], // ← must explicitly allow Authorization
   credentials: true,
 }));
 app.use(express.json());
 
-// Routes
 app.get('/', (req, res) => {
   res.json({ message: 'Digital Library API is running!' });
 });
@@ -28,7 +26,15 @@ try {
 } catch (err) {
   console.error('❌ Failed to load auth routes:', err.message);
 }
-// Start server — always last
+
+try {
+  const libraryRoutes = require('./routes/library');
+  app.use('/api/library', libraryRoutes);
+  console.log('✅ Library routes loaded');
+} catch (err) {
+  console.error('❌ Failed to load library routes:', err.message);
+}
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
