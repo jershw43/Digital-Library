@@ -1,61 +1,87 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import { createContext, useState, useContext, useEffect } from 'react';
+import { useAuth } from './AuthContext';
 
 const LibraryContext = createContext();
 
 export const useLibrary = () => {
   const context = useContext(LibraryContext);
-  if (!context) {
-    throw new Error('useLibrary must be used within LibraryProvider');
-  }
+  if (!context) throw new Error('useLibrary must be used within LibraryProvider');
   return context;
 };
 
 export const LibraryProvider = ({ children }) => {
-  const [library, setLibrary] = useState(() => {
-    // Load from localStorage on init
-    const saved = localStorage.getItem('digitalLibrary');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const { user, authFetch } = useAuth();
+  const [library, setLibrary] = useState([]);
+  const [libraryLoading, setLibraryLoading] = useState(false);
 
-  // Save to localStorage whenever library changes
+  // Reload library whenever the logged-in user changes
   useEffect(() => {
-    localStorage.setItem('digitalLibrary', JSON.stringify(library));
-  }, [library]);
-
-  const addToLibrary = (book) => {
-    setLibrary((prev) => {
-      // Prevent duplicates
-      if (prev.find((b) => b.id === book.id)) {
-        alert('This book is already in your library!');
-        return prev;
-      }
-      alert(`"${book.title}" has been added to your library!`);
-      return [...prev, book];
-    });
-  };
-
-  const removeFromLibrary = (bookId) => {
-    setLibrary((prev) => prev.filter((book) => book.id !== bookId));
-  };
-
-  const isInLibrary = (bookId) => {
-    return library.some((book) => book.id === bookId);
-  };
-
-  const clearLibrary = () => {
-    if (window.confirm('Are you sure you want to clear your entire library?')) {
+    if (!user) {
       setLibrary([]);
+      return;
+    }
+    setLibraryLoading(true);
+    authFetch('/api/library')
+      .then((res) => res.json())
+      .then((data) => setLibrary(Array.isArray(data) ? data : []))
+      .catch(console.error)
+      .finally(() => setLibraryLoading(false));
+  }, [user]);
+
+  const addToLibrary = async (book) => {
+    try {
+      const res = await authFetch('/api/library', {
+        method: 'POST',
+        body: JSON.stringify({ book }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message); // e.g. "already in library"
+        return;
+      }
+
+      // Optimistically add to local state so UI updates instantly
+      setLibrary((prev) => [{ ...book, addedAt: new Date() }, ...prev]);
+      alert(data.message);
+    } catch (err) {
+      alert('Failed to add book. Please try again.');
+      console.error(err);
+    }
+  };
+
+  const removeFromLibrary = async (bookId) => {
+    try {
+      await authFetch(`/api/library/${bookId}`, { method: 'DELETE' });
+      setLibrary((prev) => prev.filter((b) => b.id !== bookId && b._id !== bookId));
+    } catch (err) {
+      alert('Failed to remove book. Please try again.');
+      console.error(err);
+    }
+  };
+
+  const isInLibrary = (bookId) =>
+    library.some((b) => b.id === bookId || b._id === bookId);
+
+  const clearLibrary = async () => {
+    if (!window.confirm('Are you sure you want to clear your entire library?')) return;
+    try {
+      await Promise.all(
+        library.map((b) =>
+          authFetch(`/api/library/${b.id || b._id}`, { method: 'DELETE' })
+        )
+      );
+      setLibrary([]);
+    } catch (err) {
+      alert('Failed to clear library.');
+      console.error(err);
     }
   };
 
   return (
-    <LibraryContext.Provider value={{ 
-      library, 
-      addToLibrary, 
-      removeFromLibrary, 
-      isInLibrary,
-      clearLibrary 
-    }}>
+    <LibraryContext.Provider
+      value={{ library, libraryLoading, addToLibrary, removeFromLibrary, isInLibrary, clearLibrary }}
+    >
       {children}
     </LibraryContext.Provider>
   );
