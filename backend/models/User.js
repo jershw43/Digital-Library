@@ -20,15 +20,26 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
-    minlength: 6
+    minlength: 8,
+    validate: {
+      validator: v => /[A-Z]/.test(v),
+      message: 'Password must contain at least one uppercase letter'
+    }
   },
+  emailVerified: {
+    type: Boolean,
+    default: false
+  },
+  emailVerifyToken: String,
+  emailVerifyExpires: Date,
+  passwordResetToken: String,
+  passwordResetExpires: Date,
   createdAt: {
     type: Date,
     default: Date.now
   }
 });
 
-// Method to check if password is correct
 userSchema.methods.comparePassword = async function(candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
