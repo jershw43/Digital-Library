@@ -3,15 +3,15 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
-  const { login } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const { login }    = useAuth();
+  const navigate     = useNavigate();
+  const location     = useLocation();
 
   const successMessage = location.state?.message;
-  const returnTo = location.state?.from || '/';
+  const returnTo       = location.state?.from || '/';
 
-  const [form, setForm] = useState({ email: '', password: '' });
-  const [error, setError] = useState('');
+  const [form, setForm]     = useState({ email: '', password: '' });
+  const [error, setError]   = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -22,17 +22,22 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    if (!form.email || !form.password) { setError('Please fill in all fields'); return; }
+
+    if (!form.email || !form.password) {
+      setError('Please fill in all fields');
+      return;
+    }
 
     setLoading(true);
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
+      const res  = await fetch('/api/auth/login', {
+        method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body:    JSON.stringify(form),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Login failed');
+
       login(data.token, data.username);
       navigate(returnTo, { replace: true });
     } catch (err) {
@@ -43,102 +48,66 @@ const Login = () => {
   };
 
   return (
-    <div style={styles.page}>
-      <div style={styles.card}>
-        <h2 style={styles.title}>Welcome Back</h2>
+    <div className="form-page">
+      <div className="form-card">
+        <h2 style={{ textAlign: 'center', color: 'var(--accent)', margin: '0 0 1.5rem' }}>
+          Welcome Back
+        </h2>
 
-        {successMessage && <p style={styles.successMsg}>{successMessage}</p>}
-        {error && <p style={styles.errorMsg}>{error}</p>}
+        {successMessage && (
+          <p className="alert alert-success">{successMessage}</p>
+        )}
+        {error && (
+          <p className="alert alert-error">{error}</p>
+        )}
 
-        <form onSubmit={handleSubmit} style={styles.form}>
-          <div style={styles.fieldWrapper}>
-            <label style={styles.label}>Email</label>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
+          {/* Email */}
+          <div className="field-wrapper">
+            <label className="field-label" htmlFor="login-email">Email</label>
             <input
+              id="login-email"
               name="email"
               type="email"
               value={form.email}
               onChange={handleChange}
-              style={styles.input}
               autoComplete="email"
+              placeholder="you@example.com"
             />
           </div>
-          <div style={styles.fieldWrapper}>
-            <label style={styles.label}>Password</label>
+
+          {/* Password */}
+          <div className="field-wrapper">
+            <label className="field-label" htmlFor="login-password">Password</label>
             <input
+              id="login-password"
               name="password"
               type="password"
               value={form.password}
               onChange={handleChange}
-              style={styles.input}
               autoComplete="current-password"
+              placeholder="••••••••"
             />
           </div>
-          <button type="submit" style={styles.button} disabled={loading}>
-            {loading ? 'Logging in...' : 'Log In'}
+
+          {/* Forgot password */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 'var(--space-md)' }}>
+            <Link to="/forgot-password" style={{ fontSize: '0.85rem', color: 'var(--accent)' }}>
+              Forgot password?
+            </Link>
+          </div>
+
+          <button type="submit" className="btn-primary" disabled={loading}>
+            {loading ? 'Logging in…' : 'Log In'}
           </button>
         </form>
 
-        <p style={styles.switchText}>
-          Don't have an account? <Link to="/register">Register</Link>
+        <p className="switch-text">
+          Don&apos;t have an account? <Link to="/register">Register</Link>
         </p>
       </div>
     </div>
   );
-};
-
-const styles = {
-  page: { marginTop: '100px', display: 'flex', justifyContent: 'center', padding: '20px' },
-  card: {
-    backgroundColor: 'var(--surface)',
-    borderRadius: '12px',
-    boxShadow: '0 4px 12px var(--shadow)',
-    padding: '40px',
-    width: '100%',
-    maxWidth: '400px',
-    border: '1px solid var(--border)',
-  },
-  title: { margin: '0 0 24px', color: 'var(--accent)', textAlign: 'center' },
-  form: { display: 'flex', flexDirection: 'column' },
-  fieldWrapper: { display: 'flex', flexDirection: 'column', marginBottom: '16px' },
-  label: { marginBottom: '4px', fontWeight: '500', color: 'var(--text)', fontSize: '0.9rem' },
-  input: {
-    padding: '10px 14px',
-    fontSize: '1rem',
-    border: '2px solid var(--border)',
-    borderRadius: '8px',
-    outline: 'none',
-    backgroundColor: 'var(--bg-secondary)',
-    color: 'var(--input-color)',
-    transition: 'border-color 0.2s',
-  },
-  button: {
-    marginTop: '8px',
-    padding: '12px',
-    backgroundColor: 'var(--accent)',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '8px',
-    fontSize: '1rem',
-    fontWeight: '600',
-    cursor: 'pointer',
-  },
-  errorMsg: {
-    backgroundColor: 'color-mix(in srgb, var(--danger) 15%, transparent)',
-    color: 'var(--danger)',
-    padding: '10px 14px',
-    borderRadius: '8px',
-    marginBottom: '16px',
-    fontSize: '0.9rem',
-  },
-  successMsg: {
-    backgroundColor: '#e6f4ea',
-    color: '#2e7d32',
-    padding: '10px 14px',
-    borderRadius: '8px',
-    marginBottom: '16px',
-    fontSize: '0.9rem',
-  },
-  switchText: { marginTop: '20px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.9rem' },
 };
 
 export default Login;

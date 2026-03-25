@@ -1,12 +1,13 @@
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import './App.css';
+
 import BannerHeader from './components/BannerHeader';
-import Home from './pages/home';
-import Books from './pages/books';
-import About from './pages/about';
-import Library from './pages/Library';
-import Login from './pages/Login';
-import Register from './pages/Register';
+import Home         from './pages/home';
+import Books        from './pages/books';
+import About        from './pages/about';
+import Library      from './pages/Library';
+import Login        from './pages/Login';
+import Register     from './pages/Register';
 import { LibraryProvider } from './context/LibraryContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';

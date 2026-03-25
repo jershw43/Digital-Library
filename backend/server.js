@@ -14,8 +14,14 @@ const app = express();
 
 connectDB();
 
+// backend/server.js
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: [
+    'http://localhost:5173',    // Vite dev
+    'http://localhost',         // Capacitor Android
+    'capacitor://localhost',    // Capacitor iOS
+    'https://your-deployed-backend.com'  // production
+  ],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
