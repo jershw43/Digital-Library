@@ -7,6 +7,7 @@ import About from './pages/about';
 import Library from './pages/Library';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import VerifyEmail from './pages/VerifyEmail';
 import { LibraryProvider } from './context/LibraryContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -32,7 +33,7 @@ function AppContent() {
       <BannerHeader
         title="Digital Library"
         menuItems={menuItems}
-        user={user}                  // pass user so header can show username
+        user={user}
         onLogout={handleLogout}
         onLogin={() => navigate('/login')}
       />
@@ -43,6 +44,7 @@ function AppContent() {
         <Route path="/about" element={<About />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
 
         {/* Protected routes — user must be logged in */}
         <Route

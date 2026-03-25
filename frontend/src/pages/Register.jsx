@@ -37,7 +37,7 @@ const Register = () => {
 
     setLoading(true);
     try {
-      const res = await fetch('/api/auth/register', {
+      const res = await fetch('http://localhost:5000/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: form.username, email: form.email, password: form.password }),
@@ -46,7 +46,7 @@ const Register = () => {
       if (!text) { setServerError('Server returned an empty response'); return; }
       const data = JSON.parse(text);
       if (!res.ok) throw new Error(data.message || 'Registration failed');
-      navigate('/login', { state: { message: 'Account created! Please log in.' } });
+      navigate('/login', { state: { message: 'Account created! Please check your email to verify your account.' } });
     } catch (err) {
       setServerError(err.message);
     } finally {
