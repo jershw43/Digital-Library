@@ -1,5 +1,7 @@
 import { createContext, useState, useContext, useEffect } from 'react';
 import { useAuth } from './AuthContext';
+import { apiUrl } from '../services/api';
+
 
 const LibraryContext = createContext();
 
@@ -21,7 +23,7 @@ export const LibraryProvider = ({ children }) => {
       return;
     }
     setLibraryLoading(true);
-    authFetch('/api/library')
+    authFetch(apiUrl('/api/library'))
       .then((res) => res.json())
       .then((data) => setLibrary(Array.isArray(data) ? data : []))
       .catch(console.error)
@@ -30,7 +32,7 @@ export const LibraryProvider = ({ children }) => {
 
   const addToLibrary = async (book) => {
     try {
-      const res = await authFetch('/api/library', {
+      const res = await authFetch(apiUrl('/api/library'), {
         method: 'POST',
         body: JSON.stringify({ book }),
       });
@@ -52,7 +54,7 @@ export const LibraryProvider = ({ children }) => {
 
   const removeFromLibrary = async (bookId) => {
     try {
-      await authFetch(`/api/library/${bookId}`, { method: 'DELETE' });
+      await authFetch(apiUrl(`/api/library/${bookId}`), { method: 'DELETE' });
       setLibrary((prev) => prev.filter((b) => b.id !== bookId && b._id !== bookId));
     } catch (err) {
       alert('Failed to remove book. Please try again.');
@@ -68,7 +70,7 @@ export const LibraryProvider = ({ children }) => {
     try {
       await Promise.all(
         library.map((b) =>
-          authFetch(`/api/library/${b.id || b._id}`, { method: 'DELETE' })
+          authFetch(apiUrl(`/api/library/${b.id || b._id}`), { method: 'DELETE' })
         )
       );
       setLibrary([]);

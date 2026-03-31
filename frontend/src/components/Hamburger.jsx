@@ -25,7 +25,7 @@ const HamburgerMenu = ({ menuItems }) => {
   const barStyle = {
     width: '25px',
     height: '3px',
-    backgroundColor: 'white',
+    backgroundColor: 'var(--text-inverse)',
     transition: 'all 0.3s',
   };
 
@@ -33,8 +33,8 @@ const HamburgerMenu = ({ menuItems }) => {
     position: 'absolute',
     top: '100%',
     left: '0',
-    backgroundColor: 'white',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+    backgroundColor: 'var(--surface)',
+    boxShadow: '0 4px 8px var(--shadow)',
     borderRadius: '4px',
     minWidth: '200px',
     marginTop: '10px',
@@ -44,8 +44,8 @@ const HamburgerMenu = ({ menuItems }) => {
   const menuItemStyle = {
     padding: '12px 20px',
     cursor: 'pointer',
-    color: '#333',
-    borderBottom: '1px solid #eee',
+    color: 'var(--text)',
+    borderBottom: '1px solid var(--border)',
     transition: 'background-color 0.2s',
   };
 
@@ -63,7 +63,7 @@ const HamburgerMenu = ({ menuItems }) => {
             <div
               key={index}
               style={menuItemStyle}
-              onMouseEnter={(e) => e.target.style.backgroundColor = '#f5f5f5'}
+              onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--menu-hover)'}
               onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
               onClick={() => {
                 item.onClick();

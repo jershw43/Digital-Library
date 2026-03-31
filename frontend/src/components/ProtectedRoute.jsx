@@ -5,7 +5,7 @@ const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
   const location = useLocation();
 
-  // Wait for AuthContext to rehydrate from localStorage before deciding
+  // Wait for AuthContext to rehydrate from persisted Preferences before deciding
   if (loading) return null;
 
   if (!user) {

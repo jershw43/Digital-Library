@@ -1,5 +1,5 @@
 import { createContext, useState, useContext, useEffect } from 'react';
-
+import { Preferences } from '@capacitor/preferences';
 const AuthContext = createContext();
 
 export const useAuth = () => {
@@ -23,32 +23,34 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const username = localStorage.getItem('username');
+    const loadAuth = async () => {
+      const { value: token } = await Preferences.get({ key: 'token' });
+      const { value: username } = await Preferences.get({ key: 'username' });
 
-    if (token && username) {
-      const expiry = getTokenExpiry(token);
-      if (expiry && Date.now() < expiry) {
-        // Token is still valid
-        setUser({ token, username });
-      } else {
-        // Token is expired — clear it so user gets redirected to login
-        localStorage.removeItem('token');
-        localStorage.removeItem('username');
+      if (token && username) {
+        const expiry = getTokenExpiry(token);
+        if (expiry && Date.now() < expiry) {
+          setUser({ token, username });
+        } else {
+          await Preferences.remove({ key: 'token' });
+          await Preferences.remove({ key: 'username' });
+        }
       }
-    }
-    setLoading(false);
+      setLoading(false);
+    };
+
+    loadAuth();
   }, []);
 
-  const login = (token, username) => {
-    localStorage.setItem('token', token);
-    localStorage.setItem('username', username);
+  const login = async (token, username) => {
+    await Preferences.set({ key: 'token', value: token });
+    await Preferences.set({ key: 'username', value: username });
     setUser({ token, username });
   };
 
-  const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('username');
+  const logout = async () => {
+    await Preferences.remove({ key: 'token' });
+    await Preferences.remove({ key: 'username' });
     setUser(null);
   };
 
