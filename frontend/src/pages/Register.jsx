@@ -75,8 +75,7 @@ const Register = () => {
 
       const data = JSON.parse(text);
       if (!res.ok) throw new Error(data.message || 'Registration failed');
-
-      navigate('/login', { state: { message: 'Account created! Please log in.' } });
+      navigate('/login', { state: { message: 'Account created! Please check your email to verify your account.' } });
     } catch (err) {
       setServerError(err.message);
     } finally {

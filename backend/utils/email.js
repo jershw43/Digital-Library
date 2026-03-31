@@ -1,0 +1,32 @@
+require('dotenv').config();
+const nodemailer = require('nodemailer');
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
+
+const sendVerificationEmail = async (email, token) => {
+  const url = `http://localhost:5173/verify-email?token=${token}`;
+  await transporter.sendMail({
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: 'Verify your Digital Library email',
+    html: `<p>Click <a href="${url}">here</a> to verify your email. Link expires in 24 hours.</p>`,
+  });
+};
+
+const sendPasswordResetEmail = async (email, token) => {
+  const url = `http://localhost:3000/reset-password?token=${token}`;
+  await transporter.sendMail({
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: 'Reset your Digital Library password',
+    html: `<p>Click <a href="${url}">here</a> to reset your password. Link expires in 1 hour.</p>`,
+  });
+};
+
+module.exports = { sendVerificationEmail, sendPasswordResetEmail };
