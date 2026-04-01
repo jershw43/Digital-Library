@@ -7,6 +7,10 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  --sat: env(safe-area-inset-top);
+  --sar: env(safe-area-inset-right);
+  --sab: env(safe-area-inset-bottom);
+  --sal: env(safe-area-inset-left);
 
   /* Colour palette – light mode */
   --bg:           #ffffff;
@@ -78,6 +82,7 @@ body {
   min-height: 100vh;
   background-color: var(--bg);
   color: var(--text);
+  padding-top: calc(80px + env(safe-area-inset-top));
 }
 
 a {
