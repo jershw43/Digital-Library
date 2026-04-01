@@ -10,7 +10,7 @@ const transporter = nodemailer.createTransport({
 });
 
 const sendVerificationEmail = async (email, token) => {
-  const url = `http://localhost:5173/verify-email?token=${token}`;
+  const url = `https://digital-library-frontend-258f.onrender.com/verify-email?token=${token}`;
   await transporter.sendMail({
     from: process.env.EMAIL_USER,
     to: email,
@@ -20,7 +20,7 @@ const sendVerificationEmail = async (email, token) => {
 };
 
 const sendPasswordResetEmail = async (email, token) => {
-  const url = `http://localhost:3000/reset-password?token=${token}`;
+  const url = `https://digital-library-frontend-258f.onrender.com/reset-password?token=${token}`;
   await transporter.sendMail({
     from: process.env.EMAIL_USER,
     to: email,
