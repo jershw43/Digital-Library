@@ -15,6 +15,9 @@ const Login = () => {
   const [error, setError]   = useState('');
   const [loading, setLoading] = useState(false);
 
+  const params = new URLSearchParams(location.search);
+  const verified = params.get('verified') === 'true';
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
     setError('');
@@ -55,9 +58,11 @@ const Login = () => {
           Welcome Back
         </h2>
 
-        {successMessage && (
-          <p className="alert alert-success">{successMessage}</p>
-        )}
+        {(successMessage || justVerified) && (
+      <p className="alert alert-success">
+        {verified ? 'Email verified! You can now log in.' : successMessage}
+      </p>
+    )}
         {error && (
           <p className="alert alert-error">{error}</p>
         )}
