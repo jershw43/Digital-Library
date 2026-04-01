@@ -3,6 +3,13 @@
   "appName": "Digital Library",
   "webDir": "dist",
   "server": {
-    "cleartext": true
+    "cleartext": true,
+    "errorPath": "error.html"
+  },
+  "ios": {
+    "allowsLinkPreview": false,
+    "scrollEnabled": true,
+    "limitsNavigationsToAppBoundDomains": false,
+    "inspectable": true
   }
-}
+} 

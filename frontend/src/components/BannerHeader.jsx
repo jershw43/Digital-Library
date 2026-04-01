@@ -4,21 +4,21 @@ const BannerHeader = ({ title, menuItems, user, onLogout, onLogin }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const headerStyle = {
-    backgroundColor: '#007bff',
-    color: 'white',
-    padding: '0 16px',
-    height: 'var(--header-height, 70px)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-    width: '100%',
-    position: 'fixed',
-    top: '0',
-    left: '0',
-    zIndex: '1000',
-    boxSizing: 'border-box',
-  };
+  backgroundColor: '#007bff',
+  color: 'white',
+  paddingTop: 'max(20px, env(safe-area-inset-top))',
+  paddingBottom: '20px',
+  paddingLeft: '20px',
+  paddingRight: '20px',
+  textAlign: 'center',
+  boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+  width: '100%',
+  position: 'fixed',
+  top: '0',
+  left: '0',
+  zIndex: '1000',
+  boxSizing: 'border-box',
+};
 
   const titleStyle = {
     margin: '0',
