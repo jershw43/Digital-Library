@@ -58,17 +58,16 @@ const Login = () => {
           Welcome Back
         </h2>
 
-        {(successMessage || justVerified) && (
-      <p className="alert alert-success">
-        {verified ? 'Email verified! You can now log in.' : successMessage}
-      </p>
-    )}
+        {(successMessage || verified) && (
+          <p className="alert alert-success">
+            {verified ? 'Email verified! You can now log in.' : successMessage}
+          </p>
+        )}
         {error && (
           <p className="alert alert-error">{error}</p>
         )}
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
-          {/* Email */}
           <div className="field-wrapper">
             <label className="field-label" htmlFor="login-email">Email</label>
             <input
@@ -82,7 +81,6 @@ const Login = () => {
             />
           </div>
 
-          {/* Password */}
           <div className="field-wrapper">
             <label className="field-label" htmlFor="login-password">Password</label>
             <input
@@ -96,7 +94,6 @@ const Login = () => {
             />
           </div>
 
-          {/* Forgot password */}
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 'var(--space-md)' }}>
             <Link to="/forgot-password" style={{ fontSize: '0.85rem', color: 'var(--accent)' }}>
               Forgot password?
