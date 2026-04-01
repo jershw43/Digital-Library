@@ -1,5 +1,8 @@
 {
-  "appId": "com.SeniorProject.digitallibrary",
+  "appId": "com.yourteam.digitallibrary",
   "appName": "Digital Library",
-  "webDir": "dist"
+  "webDir": "dist",
+  "server": {
+    "cleartext": true
+  }
 }
