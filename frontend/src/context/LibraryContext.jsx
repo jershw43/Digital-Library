@@ -62,6 +62,28 @@ export const LibraryProvider = ({ children }) => {
     }
   };
 
+  const saveNotes = async (bookId, notes) => {
+    try {
+      await authFetch(`/api/library/${bookId}/notes`, {
+        method: 'PATCH',
+        body: JSON.stringify({ notes }),
+      });
+      // Update local state instantly so UI reflects change
+      setLibrary(prev =>
+        prev.map(b =>
+          (b.id === bookId || b._id === bookId)
+            ? { ...b, notes }
+            : b
+        )
+      );
+    } catch (err) {
+      Alert
+        ? Alert.alert('Error', 'Failed to save notes.')
+        : alert('Failed to save notes.');
+      console.error(err);
+    }
+  };
+
   const isInLibrary = (bookId) =>
     library.some((b) => b.id === bookId || b._id === bookId);
 
@@ -82,7 +104,7 @@ export const LibraryProvider = ({ children }) => {
 
   return (
     <LibraryContext.Provider
-      value={{ library, libraryLoading, addToLibrary, removeFromLibrary, isInLibrary, clearLibrary }}
+      value={{ library, libraryLoading, addToLibrary, removeFromLibrary, isInLibrary, clearLibrary, saveNotes }}
     >
       {children}
     </LibraryContext.Provider>

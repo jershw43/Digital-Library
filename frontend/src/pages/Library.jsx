@@ -2,10 +2,14 @@ import React, { useState } from 'react';
 import { useLibrary } from '../context/LibraryContext';
 
 const Library = () => {
-  const { library, removeFromLibrary, clearLibrary } = useLibrary();
+  const { library, removeFromLibrary, clearLibrary, saveNotes } = useLibrary();
   const [selectedBook, setSelectedBook] = useState(null);
+  const [notes, setNotes] = useState('');
 
-  const openModal  = (book) => setSelectedBook(book);
+  const openModal = (book) => {
+    setSelectedBook(book);
+    setNotes(book.notes || '');
+  };
   const closeModal = ()     => setSelectedBook(null);
 
   const handleRemove = (book) => {
@@ -82,10 +86,50 @@ const Library = () => {
               <strong>Description:</strong>{' '}
               {selectedBook.description || 'No description available.'}
             </p>
+            
+            {/* Notes section */}
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{
+                display: 'block',
+                fontWeight: 600,
+                color: 'var(--text)',
+                marginBottom: '8px',
+                fontSize: '0.9rem',
+              }}>
+                My Notes
+              </label>
+              <textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Add your personal notes about this book..."
+                style={{
+                  width: '100%',
+                  minHeight: '120px',
+                  padding: '10px 14px',
+                  borderRadius: '8px',
+                  border: '1px solid var(--border)',
+                  backgroundColor: 'var(--bg-secondary)',
+                  color: 'var(--text)',
+                  fontSize: '0.9rem',
+                  resize: 'vertical',
+                  fontFamily: 'inherit',
+                  boxSizing: 'border-box',
+                }}
+              />
+            </div>
 
             <div className="modal-actions">
               <button className="btn-secondary" onClick={closeModal}>
                 Close
+              </button>
+              <button
+                className="btn-accent"
+                onClick={async () => {
+                  await saveNotes(selectedBook.id || selectedBook._id, notes);
+                  closeModal();
+                }}
+              >
+                Save Notes
               </button>
               <button
                 className="btn-danger"

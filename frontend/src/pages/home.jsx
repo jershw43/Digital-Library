@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { searchBooks } from '../services/googleBooksAPI';
 import { useLibrary } from '../context/LibraryContext';
 import { useAuth } from '../context/AuthContext';
+import { CapacitorBarcodeScanner, CapacitorBarcodeScannerTypeHint } from '@capacitor/barcode-scanner';
+import { Capacitor } from '@capacitor/core';
 
 const truncate = (str, n) => str && str.length > n ? str.slice(0, n) + '…' : str;
 
@@ -18,6 +20,40 @@ const Home = () => {
   const { library, addToLibrary, isInLibrary } = useLibrary();
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  const isNative = Capacitor.isNativePlatform();
+
+const handleScan = async () => {
+  try {
+    const result = await CapacitorBarcodeScanner.scanBarcode({
+      hint: CapacitorBarcodeScannerTypeHint.EAN_13,
+      scanInstructions: 'Point at the barcode on the back cover',
+      scanButton: false,
+    });
+    if (result.ScanResult) {
+      setLoading(true);
+      const results = await searchBooks(`isbn:${result.ScanResult}`);
+      if (results.length > 0) {
+        setBooks(results);
+        setHasSearched(true);
+        setError(null);
+      } else {
+        setError(`No book found for ISBN: ${result.ScanResult}`);
+      }
+      setLoading(false);
+    }
+  } catch (err) {
+    console.error('Scan error:', err);
+  }
+};
+
+   const location = useLocation();
+      useEffect(() => {
+        if (location.state?.scannedBook) {
+          setBooks([location.state.scannedBook]);
+          setHasSearched(true);
+        }
+      }, [location.state]);
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -248,6 +284,30 @@ const Home = () => {
             </button>
           )}
         </form>
+
+      {isNative && (
+        <button
+          onClick={handleScan}
+          style={{
+            marginTop: '12px',
+            padding: '12px 24px',
+            borderRadius: '8px',
+            border: '1px solid var(--border)',
+            backgroundColor: 'var(--bg-secondary)',
+            color: 'var(--text)',
+            fontWeight: 600,
+            fontSize: '1rem',
+            cursor: 'pointer',
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+          }}
+        >
+          📷 Scan ISBN Barcode
+        </button>
+      )}
 
         {loading && (
           <p style={{ color: 'var(--accent)', marginTop: '16px' }}>Searching for books...</p>

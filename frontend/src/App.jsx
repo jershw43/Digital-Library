@@ -1,9 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import './App.css';
-
 import BannerHeader from './components/BannerHeader';
 import Home from './pages/home';
-import Books from './pages/books';
 import About from './pages/about';
 import Library from './pages/Library';
 import Login from './pages/Login';
@@ -19,7 +17,6 @@ function AppContent() {
 
   const menuItems = [
     { label: 'Home', onClick: () => navigate('/') },
-    { label: 'Books', onClick: () => navigate('/books') },
     { label: 'Library', onClick: () => navigate('/library') },
     { label: 'About', onClick: () => navigate('/about') },
   ];
@@ -39,15 +36,11 @@ function AppContent() {
         onLogin={() => navigate('/login')}
       />
       <Routes>
-        {/* Public routes */}
         <Route path="/" element={<Home />} />
-        <Route path="/books" element={<Books />} />
         <Route path="/about" element={<About />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
-
-        {/* Protected routes — user must be logged in */}
         <Route
           path="/library"
           element={

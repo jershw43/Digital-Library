@@ -474,3 +474,11 @@ input:focus, textarea:focus, select:focus {
   color: var(--text-muted);
   font-size: 0.9rem;
 }
+
+body.scanner-active {
+  background: transparent !important;
+}
+
+body.scanner-active #root {
+  display: none;
+}

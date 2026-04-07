@@ -4,12 +4,6 @@
   "webDir": "dist",
   "server": {
     "cleartext": true,
-    "errorPath": "error.html"
-  },
-  "ios": {
-    "allowsLinkPreview": false,
-    "scrollEnabled": true,
-    "limitsNavigationsToAppBoundDomains": false,
-    "inspectable": true
+    "allowNavigation": ["*"]
   }
-} 
+}

@@ -57,6 +57,7 @@ router.get('/', auth, async (req, res) => {
     const books = entries.map((e) => ({
       ...e.bookId.toObject(),
       status: e.status,
+      notes: e.notes || '',
       addedAt: e.addedAt,
     }));
     res.json(books);
@@ -95,6 +96,21 @@ router.delete('/:bookId', auth, async (req, res) => {
   try {
     await UserLibrary.findOneAndDelete({ userId: req.userId, bookId: req.params.bookId });
     res.json({ message: 'Book removed from library' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// PATCH /api/library/:bookId/notes
+router.patch('/:bookId/notes', auth, async (req, res) => {
+  try {
+    const { notes } = req.body;
+    await UserLibrary.findOneAndUpdate(
+      { userId: req.userId, bookId: req.params.bookId },
+      { notes },
+      { new: true }
+    );
+    res.json({ message: 'Notes saved' });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
