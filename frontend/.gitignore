@@ -23,3 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 key.env
+
+ios/App/CapApp-SPM/Package.swift
+ios/App/Package.swift
