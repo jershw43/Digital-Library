@@ -2,14 +2,12 @@ require('dotenv').config();
 const nodemailer = require('nodemailer');
  
 const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
+  host: '74.125.133.108', // Gmail's explicit IPv4 address to avoid IPv6 issues
   port: 587,
-  secure: false,
-  family: 4,
+  secure: false, // STARTTLS
+  family: 4,     // Force IPv4
   auth: {
     user: process.env.EMAIL_USER,
-    // EMAIL_PASS must be a Gmail App Password (NOT your regular Gmail password).
-    // Generate one at: Google Account → Security → 2-Step Verification → App Passwords
     pass: process.env.EMAIL_PASS,
   },
 });
