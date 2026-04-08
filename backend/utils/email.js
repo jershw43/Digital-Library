@@ -1,11 +1,20 @@
-const { Resend } = require('resend');
+require('dotenv').config();
+const nodemailer = require('nodemailer');
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const transporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
 
 const sendVerificationEmail = async (email, token) => {
   const url = `https://digital-library-frontend-258f.onrender.com/verify-email?token=${token}`;
-  await resend.emails.send({
-    from: 'Digital Library <onboarding@resend.dev>',
+  await transporter.sendMail({
+    from: process.env.EMAIL_USER,
     to: email,
     subject: 'Verify your Digital Library email',
     html: `<p>Click <a href="${url}">here</a> to verify your email. Link expires in 24 hours.</p>`,
@@ -14,8 +23,8 @@ const sendVerificationEmail = async (email, token) => {
 
 const sendPasswordResetEmail = async (email, token) => {
   const url = `https://digital-library-frontend-258f.onrender.com/reset-password?token=${token}`;
-  await resend.emails.send({
-    from: 'Digital Library <onboarding@resend.dev>',
+  await transporter.sendMail({
+    from: process.env.EMAIL_USER,
     to: email,
     subject: 'Reset your Digital Library password',
     html: `<p>Click <a href="${url}">here</a> to reset your password. Link expires in 1 hour.</p>`,
