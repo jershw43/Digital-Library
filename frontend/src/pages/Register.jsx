@@ -2,14 +2,12 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import BASE_URL from '../api';
 
-
 const validatePassword = (password) => {
   if (password.length < 8)        return 'Password must be at least 8 characters';
   if (!/[A-Z]/.test(password))   return 'Password must contain at least one uppercase letter';
   return null;
 };
 
-/* ── Reusable field component ─────────────────────────────────────────────── */
 const Field = ({ label, name, type = 'text', value, onChange, error, hint, id }) => (
   <div className="field-wrapper">
     <label className="field-label" htmlFor={id}>{label}</label>
@@ -31,7 +29,6 @@ const Field = ({ label, name, type = 'text', value, onChange, error, hint, id })
   </div>
 );
 
-/* ── Register page ────────────────────────────────────────────────────────── */
 const Register = () => {
   const navigate = useNavigate();
   const [form, setForm]           = useState({ username: '', email: '', password: '', confirm: '' });
@@ -62,7 +59,8 @@ const Register = () => {
 
     setLoading(true);
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/register`, {
+      console.log('API URL:', BASE_URL);
+      const res = await fetch(`${BASE_URL}/api/auth/register`, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({
@@ -73,6 +71,7 @@ const Register = () => {
       });
 
       const text = await res.text();
+      console.log('Response:', text);
       if (!text) { setServerError('Server returned an empty response'); return; }
 
       const data = JSON.parse(text);
