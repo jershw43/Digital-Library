@@ -1,6 +1,6 @@
 require('dotenv').config();
 const nodemailer = require('nodemailer');
-
+ 
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
   port: 465,
@@ -8,10 +8,12 @@ const transporter = nodemailer.createTransport({
   family: 4,
   auth: {
     user: process.env.EMAIL_USER,
+    // EMAIL_PASS must be a Gmail App Password (NOT your regular Gmail password).
+    // Generate one at: Google Account → Security → 2-Step Verification → App Passwords
     pass: process.env.EMAIL_PASS,
   },
 });
-
+ 
 const sendVerificationEmail = async (email, token) => {
   const url = `https://digital-library-frontend-258f.onrender.com/verify-email?token=${token}`;
   await transporter.sendMail({
@@ -21,7 +23,7 @@ const sendVerificationEmail = async (email, token) => {
     html: `<p>Click <a href="${url}">here</a> to verify your email. Link expires in 24 hours.</p>`,
   });
 };
-
+ 
 const sendPasswordResetEmail = async (email, token) => {
   const url = `https://digital-library-frontend-258f.onrender.com/reset-password?token=${token}`;
   await transporter.sendMail({
@@ -31,5 +33,5 @@ const sendPasswordResetEmail = async (email, token) => {
     html: `<p>Click <a href="${url}">here</a> to reset your password. Link expires in 1 hour.</p>`,
   });
 };
-
+ 
 module.exports = { sendVerificationEmail, sendPasswordResetEmail };

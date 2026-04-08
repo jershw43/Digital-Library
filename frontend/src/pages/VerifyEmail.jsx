@@ -1,12 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 
 const VerifyEmail = () => {
   const [searchParams] = useSearchParams();
   const [status, setStatus] = useState('verifying');
   const [message, setMessage] = useState('');
+  const hasFetched = useRef(false); // Prevents double-fire in React StrictMode
 
   useEffect(() => {
+    if (hasFetched.current) return; // Guard: only run once
+    hasFetched.current = true;
+
     const token = searchParams.get('token');
     if (!token) {
       setStatus('error');
@@ -14,7 +18,9 @@ const VerifyEmail = () => {
       return;
     }
 
-    fetch(`/api/auth/verify-email?token=${token}`)
+    const API_BASE = import.meta.env.VITE_API_URL || '';
+
+    fetch(`${API_BASE}/api/auth/verify-email?token=${token}`)
       .then(async (res) => {
         const data = await res.json();
         if (res.ok) {
