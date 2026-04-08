@@ -1,84 +1,219 @@
 <!DOCTYPE HTML>
-<!--
-	Spectral by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
--->
-<html>
-	<head>
-		<title>Documentation</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<link rel="stylesheet" href="assets/css/main.css" />
-		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
-	</head>
-	<body class="is-preload">
+<html lang="en">
+<head>
+  <title>Documentation</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+  <link rel="stylesheet" href="assets/css/main.css" />
+  <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+  <style>
+    /* ── Mobile nav ── */
+    .nav-toggle {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      flex-direction: column;
+      gap: 5px;
+      z-index: 10001;
+    }
+    .nav-toggle span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: #fff;
+      transition: all 0.3s;
+    }
+    #mobile-menu {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(20, 20, 40, 0.97);
+      z-index: 10000;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+    }
+    #mobile-menu.open { display: flex; }
+    #mobile-menu a {
+      color: #fff;
+      font-size: 1.6rem;
+      text-decoration: none;
+      font-weight: 600;
+      padding: 0.5rem 1.5rem;
+      border-bottom: 2px solid transparent;
+      transition: border-color 0.2s;
+    }
+    #mobile-menu a:hover { border-color: #fff; }
+    #mobile-menu .close-btn {
+      position: absolute;
+      top: 1.2rem; right: 1.5rem;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 2rem;
+      cursor: pointer;
+    }
 
-		<!-- Page Wrapper -->
-			<div id="page-wrapper">
+    /* ── PDF iframe wrappers ── */
+    .pdf-section {
+      margin-bottom: 2.5rem;
+    }
+    .pdf-section h3 {
+      margin-bottom: 0.5rem;
+    }
 
-				<!-- Header -->
-					<header id="header">
-						<h1><a href="index.html">Documentation</a></h1>
-						<nav id="nav">
-							<ul>
-								<li class="special">
-									<a href="#menu" class="menuToggle"><span>Menu</span></a>
-									<div id="menu">
-										<ul>
-											<li><a href="index.html">Home</a></li>
-											<li><a href="Documentation.html">Documentation</a></li>
-											<li><a href="Reports.html">Weekly Report</a></li>
-										</ul>
-									</div>
-								</li>
-							</ul>
-						</nav>
-					</header>
+    /* On mobile: replace iframes with download links */
+    .pdf-frame {
+      width: 100%;
+      height: 800px;
+      border: none;
+      display: block;
+    }
+    .pdf-fallback {
+      display: none;
+      padding: 1.2rem;
+      background: #f4f4f8;
+      border-radius: 6px;
+      text-align: center;
+      font-size: 0.95rem;
+    }
+    .pdf-fallback a {
+      font-weight: 600;
+      color: #007bff;
+    }
 
-				<!-- Main -->
-					<article id="main">
-						<header>
-							<h2>Documentation</h2>
-							<p>This page contains all documentation for the Digital Library project</p>
-						</header>
-						<section class="wrapper style5">
-							<div class="inner">
+    @media (max-width: 736px) {
+      .nav-toggle { display: flex; }
+      #nav > ul > li.special > a.menuToggle { display: none; }
 
-								<h3>Project Proposal: </h3>
-								<iframe src="docs/Proposal.pdf" width="100%" height="800px"></iframe>
+      .pdf-frame  { display: none; }
+      .pdf-fallback { display: block; }
 
+      #main > header { padding: 1.5rem 1rem; }
+      .wrapper.style5 .inner { padding: 1.5rem 1rem; }
+    }
+  </style>
+</head>
+<body class="is-preload">
 
-								<h3>Requirement Document: </h3>
-								<iframe src="docs/Requirements.pdf" width="100%" height="800px"></iframe>
-								<h3>Specifications Document: </h3>
-								<iframe src="docs/Specification.pdf" width="100%" height="800px"></iframe>
-								<h3>Design Document: </h3>
-								<iframe src="docs/Design.pdf" width="100%" height="800px"></iframe>
-								<h3>Gantt Chart: </h3>
-    							<iframe src="docs/Gantt.pdf" width ="100%" height ="320px"></iframe>
-							</div>
-						</section>
-					</article>
+  <!-- Mobile overlay menu -->
+  <div id="mobile-menu" role="dialog" aria-label="Navigation menu">
+    <button class="close-btn" onclick="closeMobileMenu()" aria-label="Close menu">&times;</button>
+    <a href="index.html"         onclick="closeMobileMenu()">Home</a>
+    <a href="Documentation.html" onclick="closeMobileMenu()">Documentation</a>
+    <a href="Reports.html"       onclick="closeMobileMenu()">Weekly Reports</a>
+  </div>
 
-				<!-- Footer -->
-					<footer id="footer">
-					
-						<ul class="copyright">
-							<li>&copy; Digital Library</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
-						</ul>
-					</footer>
+  <div id="page-wrapper">
 
-			</div>
+    <!-- Header -->
+    <header id="header">
+      <h1><a href="index.html">Digital Library</a></h1>
+      <nav id="nav">
+        <ul>
+          <li class="special">
+            <a href="#menu" class="menuToggle"><span>Menu</span></a>
+            <div id="menu">
+              <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="Documentation.html">Documentation</a></li>
+                <li><a href="Reports.html">Weekly Report</a></li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+        <button class="nav-toggle" onclick="openMobileMenu()" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+      </nav>
+    </header>
 
-		<!-- Scripts -->
-			<script src="assets/js/jquery.min.js"></script>
-			<script src="assets/js/jquery.scrollex.min.js"></script>
-			<script src="assets/js/jquery.scrolly.min.js"></script>
-			<script src="assets/js/browser.min.js"></script>
-			<script src="assets/js/breakpoints.min.js"></script>
-			<script src="assets/js/util.js"></script>
-			<script src="assets/js/main.js"></script>
+    <!-- Main -->
+    <article id="main">
+      <header>
+        <h2>Documentation</h2>
+        <p>This page contains all documentation for the Digital Library project</p>
+      </header>
+      <section class="wrapper style5">
+        <div class="inner">
 
-	</body>
+          <div class="pdf-section">
+            <h3>Project Proposal</h3>
+            <iframe class="pdf-frame" src="docs/Proposal.pdf"></iframe>
+            <div class="pdf-fallback">
+              📄 <a href="docs/Proposal.pdf" target="_blank">Open Project Proposal PDF</a>
+            </div>
+          </div>
+
+          <div class="pdf-section">
+            <h3>Requirement Document</h3>
+            <iframe class="pdf-frame" src="docs/Requirements.pdf"></iframe>
+            <div class="pdf-fallback">
+              📄 <a href="docs/Requirements.pdf" target="_blank">Open Requirements PDF</a>
+            </div>
+          </div>
+
+          <div class="pdf-section">
+            <h3>Specifications Document</h3>
+            <iframe class="pdf-frame" src="docs/Specification.pdf"></iframe>
+            <div class="pdf-fallback">
+              📄 <a href="docs/Specification.pdf" target="_blank">Open Specifications PDF</a>
+            </div>
+          </div>
+
+          <div class="pdf-section">
+            <h3>Design Document</h3>
+            <iframe class="pdf-frame" src="docs/Design.pdf"></iframe>
+            <div class="pdf-fallback">
+              📄 <a href="docs/Design.pdf" target="_blank">Open Design Document PDF</a>
+            </div>
+          </div>
+
+          <div class="pdf-section">
+            <h3>Gantt Chart</h3>
+            <iframe class="pdf-frame" src="docs/Gantt.pdf" style="height:320px;"></iframe>
+            <div class="pdf-fallback">
+              📄 <a href="docs/Gantt.pdf" target="_blank">Open Gantt Chart PDF</a>
+            </div>
+          </div>
+
+        </div>
+      </section>
+    </article>
+
+    <!-- Footer -->
+    <footer id="footer">
+      <ul class="copyright">
+        <li>&copy; Digital Library</li>
+        <li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+      </ul>
+    </footer>
+
+  </div>
+
+  <script src="assets/js/jquery.min.js"></script>
+  <script src="assets/js/jquery.scrollex.min.js"></script>
+  <script src="assets/js/jquery.scrolly.min.js"></script>
+  <script src="assets/js/browser.min.js"></script>
+  <script src="assets/js/breakpoints.min.js"></script>
+  <script src="assets/js/util.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script>
+    function openMobileMenu() {
+      document.getElementById('mobile-menu').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeMobileMenu() {
+      document.getElementById('mobile-menu').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    document.getElementById('mobile-menu').addEventListener('click', function(e) {
+      if (e.target === this) closeMobileMenu();
+    });
+  </script>
+
+</body>
 </html>
