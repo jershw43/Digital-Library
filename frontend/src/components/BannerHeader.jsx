@@ -6,7 +6,10 @@ const BannerHeader = ({ title, menuItems, user, onLogout, onLogin }) => {
   const headerStyle = {
     backgroundColor: '#007bff',
     color: 'white',
-    padding: '0 20px',
+    paddingTop: 'max(12px, env(safe-area-inset-top))',
+    paddingBottom: '12px',
+    paddingLeft: 'max(20px, env(safe-area-inset-left))',
+    paddingRight: 'max(20px, env(safe-area-inset-right))',
     boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
     width: '100%',
     position: 'fixed',
@@ -14,9 +17,9 @@ const BannerHeader = ({ title, menuItems, user, onLogout, onLogin }) => {
     left: '0',
     zIndex: '1000',
     boxSizing: 'border-box',
-    display: 'flex',           // ← flexbox row
-    alignItems: 'center',      // ← vertically center all children
-    justifyContent: 'space-between', // ← hamburger | title | login
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     minHeight: '64px',
   };
 
