@@ -22,7 +22,8 @@
     "mongood": "^0.0.5",
     "mongoose": "^9.3.2",
     "nodemailer": "^8.0.4",
-    "prompt-sync": "^4.2.0"
+    "prompt-sync": "^4.2.0",
+    "resend": "^6.10.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
