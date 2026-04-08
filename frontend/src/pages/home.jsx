@@ -17,43 +17,57 @@ const Home = () => {
   const [addingId, setAddingId] = useState(null);
   const [selectedBook, setSelectedBook] = useState(null);
 
+  const [recommendations, setRecommendations] = useState([]);
+  const [recLoading, setRecLoading] = useState(false);
+  const [recError, setRecError] = useState(null);
+
   const { library, addToLibrary, isInLibrary } = useLibrary();
-  const { user } = useAuth();
+  const { user, authFetch } = useAuth();
   const navigate = useNavigate();
 
   const isNative = Capacitor.isNativePlatform();
 
-const handleScan = async () => {
-  try {
-    const result = await CapacitorBarcodeScanner.scanBarcode({
-      hint: CapacitorBarcodeScannerTypeHint.EAN_13,
-      scanInstructions: 'Point at the barcode on the back cover',
-      scanButton: false,
-    });
-    if (result.ScanResult) {
-      setLoading(true);
-      const results = await searchBooks(`isbn:${result.ScanResult}`);
-      if (results.length > 0) {
-        setBooks(results);
-        setHasSearched(true);
-        setError(null);
-      } else {
-        setError(`No book found for ISBN: ${result.ScanResult}`);
-      }
-      setLoading(false);
-    }
-  } catch (err) {
-    console.error('Scan error:', err);
-  }
-};
-
-   const location = useLocation();
-      useEffect(() => {
-        if (location.state?.scannedBook) {
-          setBooks([location.state.scannedBook]);
+  const handleScan = async () => {
+    try {
+      const result = await CapacitorBarcodeScanner.scanBarcode({
+        hint: CapacitorBarcodeScannerTypeHint.EAN_13,
+        scanInstructions: 'Point at the barcode on the back cover',
+        scanButton: false,
+      });
+      if (result.ScanResult) {
+        setLoading(true);
+        const results = await searchBooks(`isbn:${result.ScanResult}`);
+        if (results.length > 0) {
+          setBooks(results);
           setHasSearched(true);
+          setError(null);
+        } else {
+          setError(`No book found for ISBN: ${result.ScanResult}`);
         }
-      }, [location.state]);
+        setLoading(false);
+      }
+    } catch (err) {
+      console.error('Scan error:', err);
+    }
+  };
+
+  const location = useLocation();
+  useEffect(() => {
+    if (location.state?.scannedBook) {
+      setBooks([location.state.scannedBook]);
+      setHasSearched(true);
+    }
+  }, [location.state]);
+
+  useEffect(() => {
+    if (!user || library.length === 0) return;
+    setRecLoading(true);
+    authFetch('/api/recommendations')
+      .then((res) => res.json())
+      .then((data) => setRecommendations(data.recommendations || []))
+      .catch(() => setRecError('Could not load recommendations.'))
+      .finally(() => setRecLoading(false));
+  }, [user, library]);
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -243,11 +257,6 @@ const handleScan = async () => {
 
   const firstName = user?.displayName?.split(' ')[0] ?? user?.email?.split('@')[0] ?? 'Reader';
   const recentBooks = library.slice(0, 6);
-  const aiPlaceholders = [
-    'Based on your recent reads',
-    'Trending in your genres',
-    'Hidden gems you might love',
-  ];
 
   return (
     <div style={page}>
@@ -367,21 +376,29 @@ const handleScan = async () => {
 
       {/* ── AI Recommendations ── */}
       <div style={card}>
-        <p style={cardTitle}>
-          AI Recommendations
-          <span style={comingSoonBadge}>Coming soon</span>
-        </p>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', margin: '0 0 14px' }}>
-          Personalised picks powered by your reading history — available soon.
-        </p>
-        <div style={aiGrid}>
-          {aiPlaceholders.map((label) => (
-            <div key={label} style={aiChip}>
-              <span style={{ color: 'var(--accent)' }}>✦</span>
-              {label}
-            </div>
-          ))}
-        </div>
+        <p style={cardTitle}>✦ AI Recommendations</p>
+        {recLoading && (
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem' }}>Finding books you'll love...</p>
+        )}
+        {recError && (
+          <p style={{ color: 'var(--danger)', fontSize: '0.88rem' }}>{recError}</p>
+        )}
+        {!recLoading && !recError && recommendations.length === 0 && (
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', margin: '0 0 14px' }}>
+            Add books to your library to get personalised recommendations.
+          </p>
+        )}
+        {recommendations.length > 0 && (
+          <div style={aiGrid}>
+            {recommendations.map((rec, i) => (
+              <div key={i} style={{ ...aiChip, flexDirection: 'column', alignItems: 'flex-start', gap: '4px' }}>
+                <strong style={{ color: 'var(--text)', fontStyle: 'normal' }}>{rec.title}</strong>
+                <span style={{ fontSize: '0.8rem' }}>by {rec.author}</span>
+                <span style={{ fontSize: '0.8rem', fontStyle: 'normal' }}>{rec.reason}</span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* ── My Library shelf ── */}

@@ -1,102 +1,200 @@
 <!DOCTYPE HTML>
-<!--
-	Spectral by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
--->
-<html>
-	<head>
-		<title>Digital Library</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<link rel="stylesheet" href="assets/css/main.css" />
-		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
-	</head>
-	<body class="landing is-preload">
+<html lang="en">
+<head>
+  <title>Digital Library</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+  <link rel="stylesheet" href="assets/css/main.css" />
+  <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+  <style>
+    /* ── Mobile-first nav fix ── */
+    #header nav#nav { display: flex; align-items: center; }
 
-		<!-- Page Wrapper -->
-			<div id="page-wrapper">
+    /* Hamburger toggle — visible only on mobile */
+    .nav-toggle {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      flex-direction: column;
+      gap: 5px;
+      z-index: 10001;
+    }
+    .nav-toggle span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: #fff;
+      transition: all 0.3s;
+    }
 
-				<!-- Header -->
-					<header id="header" class="alt">
-						<h1><a href="index.html">Digital Library</a></h1>
-						<nav id="nav">
-							<ul>
-								<li class="special">
-									<a href="#menu" class="menuToggle"><span>Menu</span></a>
-									<div id="menu">
-										<ul>
-											<li><a href="index.html">Home</a></li>
-											<li><a href="Documentation.html">Documentation</a></li>
-											<li><a href="Reports.html">Weekly Report</a></li>
-										</ul>
-									</div>
-								</li>
-							</ul>
-						</nav>
-					</header>
+    /* Slide-down mobile menu */
+    #mobile-menu {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(20, 20, 40, 0.97);
+      z-index: 10000;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+    }
+    #mobile-menu.open { display: flex; }
+    #mobile-menu a {
+      color: #fff;
+      font-size: 1.6rem;
+      text-decoration: none;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+      padding: 0.5rem 1.5rem;
+      border-bottom: 2px solid transparent;
+      transition: border-color 0.2s;
+    }
+    #mobile-menu a:hover { border-color: #fff; }
+    #mobile-menu .close-btn {
+      position: absolute;
+      top: 1.2rem; right: 1.5rem;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 2rem;
+      cursor: pointer;
+      line-height: 1;
+    }
 
-				<!-- Banner -->
-					<section id="banner">
-						<div class="inner">
-							<h2>Digital Library</h2>
+    /* iframes: full-width on mobile, cap height */
+    iframe {
+      width: 100% !important;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
 
-							
-						</div>
-						<a href="#one" class="more scrolly">Learn More</a>
-					</section>
+    /* Responsive tweaks */
+    @media (max-width: 736px) {
+      .nav-toggle { display: flex; }
+      /* Hide the Spectral theme's built-in menu link on mobile */
+      #nav > ul > li.special > a.menuToggle { display: none; }
 
-				<!-- One -->
-					<section id="one" class="wrapper style1 special">
-						<div class="inner">
-							<header class="major">
-								<h2>About Us<br </h2>
-	
-								<p>The Digital Library is a free web and mobile application that helps users keep track of their books.</p>
-								<h3>Project Goals :</h3>
-								<ul>
-									<li>Add Books Manually</li>
-									<li>Scan ISBN barcodes</li>
-									<li>Users have access to a personalized library</li>
-									<li>Get AI recommendations based on each users library</li>
-								</ul>
-							</header>
-						</div>
-					</section>
+      #one .inner, #two .inner { padding: 1.5rem 1rem; }
 
-				<!-- Two -->
-					<section id="two" class="wrapper alt style2">
-						<section class="spotlight">
-								<h2>Team Members</h2>
-								<ul>
-									<li>Luke Joseph</li>
-									<li>Camron Mellott</li>
-									<li>Joshua Watson</li>
-								</ul>
-							</div>
-						</section>
-						
+      section.spotlight { flex-direction: column !important; }
+      section.spotlight .image { width: 100% !important; }
 
-				<!-- Footer -->
-					<footer id="footer">
-						<ul class="icons">
-							
-						</ul>
-						<ul class="copyright">
-							<li>&copy; Digital Library</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
-						</ul>
-					</footer>
+      iframe { height: 420px !important; }
 
-			</div>
+      #banner h2 { font-size: 1.8rem; }
+    }
+  </style>
+</head>
+<body class="landing is-preload">
 
-		<!-- Scripts -->
-			<script src="assets/js/jquery.min.js"></script>
-			<script src="assets/js/jquery.scrollex.min.js"></script>
-			<script src="assets/js/jquery.scrolly.min.js"></script>
-			<script src="assets/js/browser.min.js"></script>
-			<script src="assets/js/breakpoints.min.js"></script>
-			<script src="assets/js/util.js"></script>
-			<script src="assets/js/main.js"></script>
+  <!-- Mobile full-screen overlay menu -->
+  <div id="mobile-menu" role="dialog" aria-label="Navigation menu">
+    <button class="close-btn" onclick="closeMobileMenu()" aria-label="Close menu">&times;</button>
+    <a href="index.html"        onclick="closeMobileMenu()">Home</a>
+    <a href="Documentation.html" onclick="closeMobileMenu()">Documentation</a>
+    <a href="Reports.html"      onclick="closeMobileMenu()">Weekly Reports</a>
+  </div>
 
-	</body>
+  <div id="page-wrapper">
+
+    <!-- Header -->
+    <header id="header" class="alt">
+      <h1><a href="index.html">Digital Library</a></h1>
+      <nav id="nav">
+        <!-- Desktop Spectral menu (works on desktop via theme JS) -->
+        <ul>
+          <li class="special">
+            <a href="#menu" class="menuToggle"><span>Menu</span></a>
+            <div id="menu">
+              <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="Documentation.html">Documentation</a></li>
+                <li><a href="Reports.html">Weekly Report</a></li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+        <!-- Mobile hamburger button -->
+        <button class="nav-toggle" onclick="openMobileMenu()" aria-label="Open menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </nav>
+    </header>
+
+    <!-- Banner -->
+    <section id="banner">
+      <div class="inner">
+        <h2>Digital Library</h2>
+      </div>
+      <a href="#one" class="more scrolly">Learn More</a>
+    </section>
+
+    <!-- One: About -->
+    <section id="one" class="wrapper style1 special">
+      <div class="inner">
+        <header class="major">
+          <h2>About Us</h2>
+          <p>The Digital Library is a free web and mobile application that helps users keep track of their books.</p>
+          <h3>Project Goals:</h3>
+          <ul style="text-align:left; display:inline-block;">
+            <li>Add Books Manually</li>
+            <li>Scan ISBN barcodes</li>
+            <li>Users have access to a personalized library</li>
+            <li>Get AI recommendations based on each user's library</li>
+          </ul>
+        </header>
+      </div>
+    </section>
+
+    <!-- Two: Team -->
+    <section id="two" class="wrapper alt style2">
+      <section class="spotlight">
+        <div class="content" style="padding: 2rem;">
+          <h2>Team Members</h2>
+          <ul>
+            <li>Luke Joseph</li>
+            <li>Camron Mellott</li>
+            <li>Joshua Watson</li>
+          </ul>
+        </div>
+      </section>
+    </section>
+
+    <!-- Footer -->
+    <footer id="footer">
+      <ul class="copyright">
+        <li>&copy; Digital Library</li>
+        <li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+      </ul>
+    </footer>
+
+  </div><!-- /page-wrapper -->
+
+  <!-- Scripts -->
+  <script src="assets/js/jquery.min.js"></script>
+  <script src="assets/js/jquery.scrollex.min.js"></script>
+  <script src="assets/js/jquery.scrolly.min.js"></script>
+  <script src="assets/js/browser.min.js"></script>
+  <script src="assets/js/breakpoints.min.js"></script>
+  <script src="assets/js/util.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script>
+    function openMobileMenu() {
+      document.getElementById('mobile-menu').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeMobileMenu() {
+      document.getElementById('mobile-menu').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    // Close on backdrop tap (outside the links)
+    document.getElementById('mobile-menu').addEventListener('click', function(e) {
+      if (e.target === this) closeMobileMenu();
+    });
+  </script>
+
+</body>
 </html>
