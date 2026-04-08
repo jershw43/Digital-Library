@@ -71,6 +71,7 @@ const Register = () => {
       });
 
       const text = await res.text();
+      console.log('Response:', text);
       if (!text) { setServerError('Server returned an empty response'); return; }
 
       const data = JSON.parse(text);
