@@ -8,6 +8,7 @@ const { sendVerificationEmail, sendPasswordResetEmail } = require('../utils/emai
 
 // Register
 router.post('/register', async (req, res) => {
+  console.log('Register hit', req.body);
   const { username, email, password } = req.body;
   const passwordRegex = /^(?=.*[A-Z]).{8,}$/;
   if (!passwordRegex.test(password))
@@ -26,11 +27,15 @@ router.post('/register', async (req, res) => {
       emailVerifyToken: crypto.createHash('sha256').update(verifyToken).digest('hex'),
       emailVerifyExpires: Date.now() + 24 * 60 * 60 * 1000,
     });
+    console.log('Saving user...');
     await user.save();
+    console.log('User saved, sending email...');
     await sendVerificationEmail(email, verifyToken);
+    console.log('Email sent!');
 
     res.status(201).json({ message: 'Registered! Check your email to verify your account.' });
   } catch (err) {
+    console.error('Register error:', err);
     res.status(500).json({ message: err.message });
   }
 });
