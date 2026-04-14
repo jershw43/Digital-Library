@@ -36,7 +36,8 @@ const addUser = async () => {
     const user = new User({ 
       username, 
       email, 
-      password: hashedPassword 
+      password: hashedPassword, 
+      emailVerified: true
     });
     
     await user.save();

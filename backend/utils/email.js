@@ -1,7 +1,6 @@
-require('dotenv').config();
 const nodemailer = require('nodemailer');
 
-const transporter = nodemailer.createTransport({
+const createTransporter = () => nodemailer.createTransport({
   host: 'smtp.gmail.com',
   port: 465,
   secure: true,
@@ -14,7 +13,7 @@ const transporter = nodemailer.createTransport({
 
 const sendVerificationEmail = async (email, token) => {
   const url = `https://digital-library-frontend-258f.onrender.com/verify-email?token=${token}`;
-  await transporter.sendMail({
+  await createTransporter().sendMail({
     from: process.env.EMAIL_USER,
     to: email,
     subject: 'Verify your Digital Library email',
@@ -24,7 +23,7 @@ const sendVerificationEmail = async (email, token) => {
 
 const sendPasswordResetEmail = async (email, token) => {
   const url = `https://digital-library-frontend-258f.onrender.com/reset-password?token=${token}`;
-  await transporter.sendMail({
+  await createTransporter().sendMail({
     from: process.env.EMAIL_USER,
     to: email,
     subject: 'Reset your Digital Library password',
