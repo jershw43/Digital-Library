@@ -73,14 +73,22 @@ const Home = () => {
   }, [location.state]);
 
   useEffect(() => {
-    if (!user || library.length === 0) return;
-    setRecLoading(true);
-    authFetch('/api/recommendations')
-      .then((res) => res.json())
-      .then((data) => setRecommendations(data.recommendations || []))
-      .catch(() => setRecError('Could not load recommendations.'))
-      .finally(() => setRecLoading(false));
-  }, [user, library]);
+  if (!user || library.length === 0) return;
+  setRecLoading(true);
+  setRecError(null);
+
+  const books = library.map((b) => ({ title: b.title, author: b.author }));
+
+  authFetch('/api/recommendations', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ books }),
+  })
+    .then((res) => res.json())
+    .then((data) => setRecommendations(data.recommendations || []))
+    .catch(() => setRecError('Could not load recommendations.'))
+    .finally(() => setRecLoading(false));
+}, [user, library]);
 
   const handleSearch = async (e) => {
     e.preventDefault();
