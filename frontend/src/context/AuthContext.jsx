@@ -1,6 +1,6 @@
 import { createContext, useState, useContext, useEffect } from 'react';
 import { Preferences } from '@capacitor/preferences';
-
+console.log('VITE_API_URL =', import.meta.env.VITE_API_URL);
 const AuthContext = createContext();
 
 export const useAuth = () => {
@@ -55,8 +55,8 @@ export const AuthProvider = ({ children }) => {
   };
 
   const authFetch = (url, options = {}) => {
-  const base = import.meta.env.VITE_API_URL ?? '';
-  return fetch(`${base}${url}`, {
+  const base = import.meta.env.VITE_API_URL || '';
+  return fetch(`${base}${url}`, {   // url already starts with /api/...
     ...options,
     headers: {
       'Content-Type': 'application/json',
