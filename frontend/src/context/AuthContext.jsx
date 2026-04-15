@@ -1,5 +1,6 @@
 import { createContext, useState, useContext, useEffect } from 'react';
 import { Preferences } from '@capacitor/preferences';
+
 const AuthContext = createContext();
 
 export const useAuth = () => {
@@ -8,11 +9,10 @@ export const useAuth = () => {
   return context;
 };
 
-// Decode JWT payload without verifying signature (verification happens on the server)
 const getTokenExpiry = (token) => {
   try {
     const payload = JSON.parse(atob(token.split('.')[1]));
-    return payload.exp * 1000; // convert to ms
+    return payload.exp * 1000;
   } catch {
     return null;
   }
@@ -55,8 +55,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   const authFetch = (url, options = {}) => {
+    const base = import.meta.env.VITE_API_URL || ''; 
     const { headers, ...rest } = options;
-    return fetch(url, {
+    return fetch(`${base}${url}`, {                    
       ...rest,
       headers: {
         'Content-Type': 'application/json',
