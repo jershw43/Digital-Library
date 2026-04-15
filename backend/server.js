@@ -27,7 +27,7 @@ try {
 }
 
 try {
-  const libraryRoutes = require('./Library');
+  const libraryRoutes = require('./routes/library');
   app.use('/api/library', libraryRoutes);
   console.log('✅ Library routes loaded');
 } catch (err) {

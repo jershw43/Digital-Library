@@ -3,7 +3,7 @@ const router = express.Router();
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const User = require('./User');
 const { sendVerificationEmail, sendPasswordResetEmail } = require('../utils/email');
  
 // Register
