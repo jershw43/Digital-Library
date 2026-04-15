@@ -8,6 +8,227 @@ import { Capacitor } from '@capacitor/core';
 
 const truncate = (str, n) => str && str.length > n ? str.slice(0, n) + '…' : str;
 
+// ── Styles ────────────────────────────────────────────────────────────────────
+
+const styles = {
+  page: {
+    padding: '20px',
+    maxWidth: '900px',
+    margin: '100px auto 60px',
+  },
+  card: {
+    backgroundColor: 'var(--bg-secondary)',
+    border: '1px solid var(--border)',
+    borderRadius: '12px',
+    padding: '28px 24px',
+    marginBottom: '28px',
+    boxShadow: '0 2px 8px var(--shadow)',
+  },
+  cardTitle: {
+    fontSize: '1.1rem',
+    fontWeight: 600,
+    color: 'var(--text)',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    margin: '0 0 16px 0',
+  },
+  searchRow: {
+    display: 'flex',
+    gap: '10px',
+  },
+  input: {
+    flex: 1,
+    padding: '12px 16px',
+    borderRadius: '8px',
+    border: '1px solid var(--border)',
+    backgroundColor: 'var(--surface)',
+    color: 'var(--text)',
+    fontSize: '1rem',
+    outline: 'none',
+  },
+  btn: {
+    padding: '12px 24px',
+    borderRadius: '8px',
+    border: 'none',
+    backgroundColor: 'var(--accent)',
+    color: '#fff',
+    fontWeight: 600,
+    fontSize: '1rem',
+    cursor: 'pointer',
+    whiteSpace: 'nowrap',
+  },
+  btnSecondary: {
+    padding: '12px 24px',
+    borderRadius: '8px',
+    border: '1px solid var(--border)',
+    backgroundColor: 'var(--bg-secondary)',
+    color: 'var(--text)',
+    fontWeight: 600,
+    fontSize: '1rem',
+    cursor: 'pointer',
+    whiteSpace: 'nowrap',
+  },
+  scanBtn: {
+    marginTop: '12px',
+    padding: '12px 24px',
+    borderRadius: '8px',
+    border: '1px solid var(--border)',
+    backgroundColor: 'var(--bg-secondary)',
+    color: 'var(--text)',
+    fontWeight: 600,
+    fontSize: '1rem',
+    cursor: 'pointer',
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+  },
+  bookItem: {
+    padding: '15px',
+    marginBottom: '10px',
+    backgroundColor: 'var(--surface)',
+    borderRadius: '8px',
+    boxShadow: '0 2px 4px var(--shadow)',
+    border: '1px solid var(--border)',
+    cursor: 'pointer',
+    transition: 'transform 0.2s, box-shadow 0.2s',
+    display: 'flex',
+    gap: '15px',
+  },
+  thumbnail: {
+    width: '60px',
+    height: '90px',
+    objectFit: 'cover',
+    borderRadius: '4px',
+    backgroundColor: 'var(--border)',
+    flexShrink: 0,
+  },
+  thumbnailPlaceholder: {
+    width: '60px',
+    height: '90px',
+    borderRadius: '4px',
+    backgroundColor: 'var(--border)',
+    flexShrink: 0,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '1.5rem',
+  },
+  aiGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+    gap: '12px',
+    marginTop: '4px',
+  },
+  aiChip: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    gap: '4px',
+    padding: '14px 18px',
+    backgroundColor: 'var(--surface)',
+    border: '1px dashed var(--border)',
+    borderRadius: '8px',
+    color: 'var(--text-muted)',
+    fontSize: '0.9rem',
+  },
+  shelfGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))',
+    gap: '16px',
+    marginTop: '4px',
+  },
+  bookCard: {
+    display: 'flex',
+    flexDirection: 'column',
+    backgroundColor: 'var(--surface)',
+    border: '1px solid var(--border)',
+    borderRadius: '8px',
+    overflow: 'hidden',
+    cursor: 'pointer',
+    transition: 'transform 0.18s, box-shadow 0.18s',
+  },
+  coverImg: {
+    width: '100%',
+    height: '120px',
+    objectFit: 'cover',
+    backgroundColor: 'var(--border)',
+  },
+  coverPlaceholder: {
+    width: '100%',
+    height: '120px',
+    backgroundColor: 'var(--border)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '2rem',
+    color: 'var(--text-muted)',
+  },
+  progressBarWrap: {
+    height: '4px',
+    backgroundColor: 'var(--border)',
+    borderRadius: '2px',
+    marginTop: '8px',
+    overflow: 'hidden',
+  },
+  viewAllBtn: {
+    marginTop: '16px',
+    display: 'inline-block',
+    fontSize: '0.85rem',
+    color: 'var(--accent)',
+    cursor: 'pointer',
+    textDecoration: 'underline',
+    background: 'none',
+    border: 'none',
+    padding: 0,
+  },
+  modalOverlay: {
+    position: 'fixed',
+    top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 2000,
+  },
+  modalContent: {
+    backgroundColor: 'var(--surface)',
+    color: 'var(--text)',
+    border: '1px solid var(--border)',
+    padding: '30px',
+    borderRadius: '12px',
+    maxWidth: '600px',
+    width: '90%',
+    maxHeight: '80vh',
+    overflowY: 'auto',
+    boxShadow: '0 8px 16px var(--shadow)',
+  },
+  closeBtn: {
+    backgroundColor: 'var(--bg-secondary)',
+    color: 'var(--text)',
+    border: '1px solid var(--border)',
+    padding: '10px 20px',
+    borderRadius: '5px',
+    cursor: 'pointer',
+  },
+};
+
+const addBtnStyle = (inLibrary, isAdding) => ({
+  backgroundColor: inLibrary ? '#28a745' : 'var(--accent)',
+  color: '#fff',
+  border: 'none',
+  padding: '8px 16px',
+  borderRadius: '5px',
+  cursor: inLibrary || isAdding ? 'default' : 'pointer',
+  fontSize: '0.9rem',
+  opacity: isAdding ? 0.7 : 1,
+  transition: 'background-color 0.2s',
+});
+
+// ── Component ─────────────────────────────────────────────────────────────────
+
 const Home = () => {
   const [query, setQuery]               = useState('');
   const [books, setBooks]               = useState([]);
@@ -16,6 +237,7 @@ const Home = () => {
   const [hasSearched, setHasSearched]   = useState(false);
   const [addingId, setAddingId]         = useState(null);
   const [selectedBook, setSelectedBook] = useState(null);
+  const [statusModalBook, setStatusModalBook] = useState(null);
 
   const [recommendations, setRecommendations] = useState([]);
   const [recLoading, setRecLoading]           = useState(false);
@@ -73,24 +295,6 @@ const Home = () => {
     }
   };
 
-  const location = useLocation();
-  useEffect(() => {
-    if (location.state?.scannedBook) {
-      setBooks([location.state.scannedBook]);
-      setHasSearched(true);
-    }
-  }, [location.state]);
-
-  useEffect(() => {
-    if (!user || library.length === 0) return;
-    setRecLoading(true);
-    authFetch('/api/recommendations')
-      .then((res) => res.json())
-      .then((data) => setRecommendations(data.recommendations || []))
-      .catch(() => setRecError('Could not load recommendations.'))
-      .finally(() => setRecLoading(false));
-  }, [user, library]);
-
   const handleSearch = async (e) => {
     e.preventDefault();
     if (!query.trim()) return;
@@ -118,164 +322,49 @@ const Home = () => {
     setHasSearched(false);
   };
 
-  const handleAddToLibrary = async (book) => {
+  const handleAddToLibrary = async (book, status = 'reading') => {
     if (!user) {
       navigate('/login', { state: { from: '/' } });
       return;
     }
     setAddingId(book.id);
-    await addToLibrary(book);
+    await addToLibrary(book, status);
     setAddingId(null);
     setStatusModalBook(null);
   };
 
-  // ── Styles ───────────────────────────────────────────────────────────────────
+  // ── Derived values ───────────────────────────────────────────────────────────
 
-  const page = {
-    padding: '20px',
-    maxWidth: '900px',
-    margin: '100px auto 60px',
-  };
+  const firstName   = user?.displayName?.split(' ')[0] ?? user?.email?.split('@')[0] ?? 'Reader';
+  const recentBooks = library.slice(0, 5);
 
-  const card = {
-    backgroundColor: 'var(--bg-secondary)',
-    border: '1px solid var(--border)',
-    borderRadius: '12px',
-    padding: '28px 24px',
-    marginBottom: '28px',
-    boxShadow: '0 2px 8px var(--shadow)',
-  };
+  // ── Sub-components ───────────────────────────────────────────────────────────
 
-  const cardTitle = {
-    fontSize: '1.1rem',
-    fontWeight: 600,
-    color: 'var(--text)',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    margin: '0 0 16px 0',
-  };
-
-  const searchRow = { display: 'flex', gap: '10px' };
-
-  const inputStyle = {
-    flex: 1,
-    padding: '12px 16px',
-    borderRadius: '8px',
-    border: '1px solid var(--border)',
-    backgroundColor: 'var(--surface)',
-    color: 'var(--text)',
-    fontSize: '1rem',
-    outline: 'none',
-  };
-
-  const searchBtn = {
-    padding: '12px 24px',
-    borderRadius: '8px',
-    border: 'none',
-    backgroundColor: 'var(--accent)',
-    color: '#fff',
-    fontWeight: 600,
-    fontSize: '1rem',
-    cursor: 'pointer',
-    whiteSpace: 'nowrap',
-  };
-
-  const bookItemStyle = {
-    padding: '15px',
-    marginBottom: '10px',
-    backgroundColor: 'var(--surface)',
-    borderRadius: '8px',
-    boxShadow: '0 2px 4px var(--shadow)',
-    border: '1px solid var(--border)',
-    cursor: 'pointer',
-    transition: 'transform 0.2s, box-shadow 0.2s',
-    display: 'flex',
-    gap: '15px',
-  };
-
-  const thumbnailStyle = {
-    width: '60px', height: '90px', objectFit: 'cover',
-    borderRadius: '4px', backgroundColor: 'var(--border)', flexShrink: 0,
-  };
-
-  const addBtnStyle = (inLibrary, isAdding) => ({
-    backgroundColor: inLibrary ? '#28a745' : 'var(--accent)',
-    color: '#fff', border: 'none',
-    padding: '8px 16px', borderRadius: '5px',
-    cursor: inLibrary || isAdding ? 'default' : 'pointer',
-    fontSize: '0.9rem', opacity: isAdding ? 0.7 : 1,
-    transition: 'background-color 0.2s',
-  });
-
-  const comingSoonBadge = {
-    fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.05em',
-    textTransform: 'uppercase', backgroundColor: 'var(--accent)',
-    color: '#fff', padding: '2px 8px', borderRadius: '20px',
-    marginLeft: 'auto', opacity: 0.85,
-  };
-
-  const aiGrid = {
-    display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
-    gap: '12px', marginTop: '4px',
-  };
-
-  const aiChip = {
-    display: 'flex', alignItems: 'center', gap: '10px',
-    padding: '14px 18px', backgroundColor: 'var(--surface)',
-    border: '1px dashed var(--border)', borderRadius: '8px',
-    color: 'var(--text-muted)', fontSize: '0.9rem', fontStyle: 'italic',
-  };
-
-  const shelfGrid = {
-    display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))',
-    gap: '16px', marginTop: '4px',
-  };
-
-  const bookCard = {
-    display: 'flex', flexDirection: 'column',
-    backgroundColor: 'var(--surface)', border: '1px solid var(--border)',
-    borderRadius: '8px', overflow: 'hidden',
-    cursor: 'pointer', transition: 'transform 0.18s, box-shadow 0.18s',
-  };
-
-  const coverImg = {
-    width: '100%', height: '120px', objectFit: 'cover', backgroundColor: 'var(--border)',
-  };
-
-  const coverPlaceholder = {
-    ...coverImg, display: 'flex', alignItems: 'center',
-    justifyContent: 'center', fontSize: '2rem', color: 'var(--text-muted)',
-  };
-
-  const progressBarWrap = {
-    height: '4px', backgroundColor: 'var(--border)',
-    borderRadius: '2px', marginTop: '8px', overflow: 'hidden',
-  };
-
-  const viewAllBtn = {
-    marginTop: '16px', display: 'inline-block', fontSize: '0.85rem',
-    color: 'var(--accent)', cursor: 'pointer', textDecoration: 'underline',
-    background: 'none', border: 'none', padding: 0,
-  };
-
-  const modalOverlayStyle = {
-    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 2000,
-  };
-
-  const modalContentStyle = {
-    backgroundColor: 'var(--surface)', color: 'var(--text)',
-    border: '1px solid var(--border)', padding: '30px', borderRadius: '12px',
-    maxWidth: '600px', width: '90%', maxHeight: '80vh', overflowY: 'auto',
-    boxShadow: '0 8px 16px var(--shadow)',
-  };
-
-  const closeBtnStyle = {
-    backgroundColor: 'var(--bg-secondary)', color: 'var(--text)',
-    border: '1px solid var(--border)', padding: '10px 20px',
-    borderRadius: '5px', cursor: 'pointer',
+  const BookButtons = ({ book, stopProp = true }) => {
+    const inLibrary = isInLibrary(book.id);
+    const isAdding  = addingId === book.id;
+    return (
+      <div
+        style={{ display: 'flex', gap: '8px' }}
+        onClick={stopProp ? (e) => e.stopPropagation() : undefined}
+      >
+        <button
+          style={addBtnStyle(inLibrary, isAdding)}
+          disabled={inLibrary || isAdding}
+          onClick={() => { if (!inLibrary) setStatusModalBook(book); }}
+        >
+          {inLibrary ? '✓ In Library' : isAdding ? 'Adding...' : '+ Add to Library'}
+        </button>
+        {!inLibrary && (
+          <button
+            style={{ ...addBtnStyle(false, false), backgroundColor: '#6c757d' }}
+            onClick={() => handleAddToLibrary(book, 'want-to-read')}
+          >
+            Want to Read
+          </button>
+        )}
+      </div>
+    );
   };
 
   // ── Render ───────────────────────────────────────────────────────────────────
@@ -313,38 +402,18 @@ const Home = () => {
           )}
         </form>
 
-      {isNative && (
-        <button
-          onClick={handleScan}
-          style={{
-            marginTop: '12px',
-            padding: '12px 24px',
-            borderRadius: '8px',
-            border: '1px solid var(--border)',
-            backgroundColor: 'var(--bg-secondary)',
-            color: 'var(--text)',
-            fontWeight: 600,
-            fontSize: '1rem',
-            cursor: 'pointer',
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px',
-          }}
-        >
-          📷 Scan ISBN Barcode
-        </button>
-      )}
+        {isNative && (
+          <button onClick={handleScan} style={styles.scanBtn}>
+            📷 Scan ISBN Barcode
+          </button>
+        )}
 
         {loading && (
           <p style={{ color: 'var(--accent)', marginTop: '16px' }}>Searching for books...</p>
         )}
-
         {error && !loading && (
           <p style={{ color: 'var(--danger)', marginTop: '16px' }}>{error}</p>
         )}
-
         {!hasSearched && !loading && (
           <p style={{ color: 'var(--text-muted)', marginTop: '16px', fontSize: '0.88rem', fontStyle: 'italic' }}>
             Search by title, author, or ISBN to get started.
@@ -353,49 +422,41 @@ const Home = () => {
 
         {!loading && books.length > 0 && (
           <ul style={{ listStyle: 'none', padding: 0, margin: '20px 0 0' }}>
-            {books.map((book) => {
-              const inLibrary = isInLibrary(book.id);
-              return (
-                <li
-                  key={book.id}
-                  style={bookItemStyle}
-                  onClick={() => setSelectedBook(book)}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                    e.currentTarget.style.boxShadow = '0 4px 8px var(--shadow)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = '0 2px 4px var(--shadow)';
-                  }}
-                >
-                  {book.thumbnail
-                    ? <img src={book.thumbnail} alt={book.title} style={thumbnailStyle} />
-                    : <div style={{ ...thumbnailStyle, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>📖</div>
-                  }
-                  <div style={{ flex: 1 }}>
-                    <h3 style={{ margin: '0 0 4px', color: 'var(--text)', fontSize: '1rem' }}>{book.title}</h3>
-                    <p style={{ margin: '0 0 10px', color: 'var(--text-muted)', fontSize: '0.88rem' }}>
-                      {book.author} • {book.year}
-                    </p>
-                    <button
-                      style={addBtnStyle(inLibrary, addingId === book.id)}
-                      disabled={inLibrary || addingId === book.id}
-                      onClick={(e) => { e.stopPropagation(); handleAddToLibrary(book); }}
-                    >
-                      {inLibrary ? '✓ In Library' : addingId === book.id ? 'Adding...' : '+ Add to Library'}
-                    </button>
-                  </div>
-                </li>
-              );
-            })}
+            {books.map((book) => (
+              <li
+                key={book.id}
+                style={styles.bookItem}
+                onClick={() => setSelectedBook(book)}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 4px 8px var(--shadow)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 2px 4px var(--shadow)';
+                }}
+              >
+                {book.thumbnail
+                  ? <img src={book.thumbnail} alt={book.title} style={styles.thumbnail} />
+                  : <div style={styles.thumbnailPlaceholder}>📖</div>
+                }
+                <div style={{ flex: 1 }}>
+                  <h3 style={{ margin: '0 0 4px', color: 'var(--text)', fontSize: '1rem' }}>{book.title}</h3>
+                  <p style={{ margin: '0 0 10px', color: 'var(--text-muted)', fontSize: '0.88rem' }}>
+                    {book.author} • {book.year}
+                  </p>
+                  <BookButtons book={book} />
+                </div>
+              </li>
+            ))}
           </ul>
         )}
       </div>
 
-      {/* ── AI Recommendations ── */}
-      <div style={card}>
-        <p style={cardTitle}>✦ AI Recommendations</p>
+      {/* ── AI Recommendations card ── */}
+      <div style={styles.card}>
+        <p style={styles.cardTitle}>✦ AI Recommendations</p>
+
         {recLoading && (
           <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem' }}>Finding books you'll love...</p>
         )}
@@ -410,8 +471,8 @@ const Home = () => {
         {recommendations.length > 0 && (
           <div style={styles.aiGrid}>
             {recommendations.map((rec, i) => (
-              <div key={i} style={{ ...aiChip, flexDirection: 'column', alignItems: 'flex-start', gap: '4px' }}>
-                <strong style={{ color: 'var(--text)', fontStyle: 'normal' }}>{rec.title}</strong>
+              <div key={i} style={styles.aiChip}>
+                <strong style={{ color: 'var(--text)' }}>{rec.title}</strong>
                 <span style={{ fontSize: '0.8rem' }}>by {rec.author}</span>
                 <span style={{ fontSize: '0.8rem' }}>{rec.reason}</span>
               </div>
@@ -450,7 +511,7 @@ const Home = () => {
                     <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', margin: '0 0 4px' }}>
                       {truncate(book.author, 28)}
                     </p>
-                    <div style={progressBarWrap}>
+                    <div style={styles.progressBarWrap}>
                       <div style={{
                         height: '100%',
                         width: `${book.progress ?? 0}%`,
@@ -473,7 +534,7 @@ const Home = () => {
       {/* ── Book detail modal ── */}
       {selectedBook && (() => {
         const inLibrary = isInLibrary(selectedBook.id);
-        const isAdding = addingId === selectedBook.id;
+        const isAdding  = addingId === selectedBook.id;
         return (
           <div style={styles.modalOverlay} onClick={() => setSelectedBook(null)}>
             <div style={styles.modalContent} onClick={(e) => e.stopPropagation()}>
@@ -490,20 +551,50 @@ const Home = () => {
                 <strong>Description:</strong>
                 <p style={{ color: 'var(--text-muted)' }}>{selectedBook.description || 'No description available.'}</p>
               </div>
-              <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-                <button style={closeBtnStyle} onClick={() => setSelectedBook(null)}>Close</button>
-                <button
-                  style={addBtnStyle(inLibrary, isAdding)}
-                  disabled={inLibrary || isAdding}
-                  onClick={() => handleAddToLibrary(selectedBook)}
-                >
-                  {inLibrary ? '✓ In Library' : isAdding ? 'Adding...' : '+ Add to Library'}
-                </button>
+              <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+                <button style={styles.closeBtn} onClick={() => setSelectedBook(null)}>Close</button>
+                <BookButtons book={selectedBook} stopProp={false} />
               </div>
             </div>
           </div>
         );
       })()}
+
+      {/* ── Status picker modal ── */}
+      {statusModalBook && (
+        <div style={styles.modalOverlay} onClick={() => setStatusModalBook(null)}>
+          <div
+            style={{ ...styles.modalContent, maxWidth: '380px' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 style={{ marginTop: 0, color: 'var(--accent)' }}>Add to Library</h3>
+            <p style={{ color: 'var(--text-muted)', marginBottom: '20px' }}>
+              How are you reading{' '}
+              <strong style={{ color: 'var(--text)' }}>{statusModalBook.title}</strong>?
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <button
+                style={{ ...styles.btn, backgroundColor: '#fd7e14', padding: '14px' }}
+                onClick={() => handleAddToLibrary(statusModalBook, 'reading')}
+              >
+                📖 In Progress
+              </button>
+              <button
+                style={{ ...styles.btn, backgroundColor: '#28a745', padding: '14px' }}
+                onClick={() => handleAddToLibrary(statusModalBook, 'finished')}
+              >
+                ✅ Completed
+              </button>
+            </div>
+            <button
+              style={{ ...styles.btnSecondary, marginTop: '12px', width: '100%' }}
+              onClick={() => setStatusModalBook(null)}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
 
     </div>
   );

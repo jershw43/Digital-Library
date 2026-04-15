@@ -3,7 +3,7 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 
-// ── Inline models ─────────────────────────────────────────────────────────────
+// ── Models ─────────────────────────────────────────
 
 const bookSchema = new mongoose.Schema({
   _id: String,
@@ -25,42 +25,47 @@ const userLibrarySchema = new mongoose.Schema({
   notes: String,
 });
 userLibrarySchema.index({ userId: 1, bookId: 1 }, { unique: true });
-const UserLibrary = mongoose.models.UserLibrary || mongoose.model('UserLibrary', userLibrarySchema);
 
-// ── Inline auth middleware ────────────────────────────────────────────────────
+const UserLibrary =
+  mongoose.models.UserLibrary ||
+  mongoose.model('UserLibrary', userLibrarySchema);
+
+// ── Auth Middleware ────────────────────────────────
 
 const auth = (req, res, next) => {
   const header = req.headers.authorization;
+
   if (!header || !header.startsWith('Bearer ')) {
     return res.status(401).json({ message: 'No token — please log in' });
   }
-  const token = header.slice(7);
+
   try {
+    const token = header.slice(7);
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.userId = decoded.id;
     next();
   } catch (err) {
-    console.error('JWT verify failed:', err.message, '| JWT_SECRET set:', !!process.env.JWT_SECRET);
     return res.status(401).json({ message: 'Invalid or expired token' });
   }
 };
 
-// ── Shelf name ↔ status enum ──────────────────────────────────────────────────
+// ── Shelf Mapping ─────────────────────────────────
 
 const shelfToStatus = {
-  'Want to Read':      'want-to-read',
+  'Want to Read': 'want-to-read',
   'Currently Reading': 'reading',
-  'Finished Reading':  'finished',
+  'Finished Reading': 'finished',
 };
+
 const statusToShelf = {
   'want-to-read': 'Want to Read',
-  'reading':      'Currently Reading',
-  'finished':     'Finished Reading',
+  'reading': 'Currently Reading',
+  'finished': 'Finished Reading',
 };
 
-// ── Routes ────────────────────────────────────────────────────────────────────
+// ── Routes ───────────────────────────────────────
 
-// GET /api/library
+// GET library
 router.get('/', auth, async (req, res) => {
   try {
     const entries = await UserLibrary.find({ userId: req.userId })
@@ -69,21 +74,25 @@ router.get('/', auth, async (req, res) => {
 
     const books = entries.map((e) => ({
       ...e.bookId.toObject(),
-      shelf:   statusToShelf[e.status] || 'Want to Read',
-      status:  e.status,
-      notes:   e.notes || '',
+      shelf: statusToShelf[e.status],
+      status: e.status,
+      notes: e.notes || '',
       addedAt: e.addedAt,
     }));
+
     res.json(books);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
 
-// POST /api/library
+// ADD book
 router.post('/', auth, async (req, res) => {
-  const { book, shelf, status} = req.body;
-  if (!book?.id) return res.status(400).json({ message: 'Book data is required' });
+  const { book, status } = req.body;
+
+  if (!book?.id) {
+    return res.status(400).json({ message: 'Book data is required' });
+  }
 
   const allowed = ['want-to-read', 'reading', 'finished'];
   const bookStatus = allowed.includes(status) ? status : 'want-to-read';
@@ -92,29 +101,47 @@ router.post('/', auth, async (req, res) => {
     await Book.findByIdAndUpdate(
       book.id,
       {
-        _id: book.id, title: book.title, author: book.author, year: book.year,
-        thumbnail: book.thumbnail, description: book.description,
+        _id: book.id,
+        title: book.title,
+        author: book.author,
+        year: book.year,
+        thumbnail: book.thumbnail,
+        description: book.description,
         publisher: book.publisher,
-        pageCount: Number.isFinite(Number(book.pageCount)) ? Number(book.pageCount) : null,
+        pageCount: Number.isFinite(Number(book.pageCount))
+          ? Number(book.pageCount)
+          : null,
       },
       { upsert: true, new: true }
     );
 
-    const status = shelfToStatus[shelf] || 'want-to-read';
-    const entry = new UserLibrary({ userId: req.userId, bookId: book.id, status: bookStatus });
+    const entry = new UserLibrary({
+      userId: req.userId,
+      bookId: book.id,
+      status: bookStatus,
+    });
+
     await entry.save();
-    res.status(201).json({ message: `"${book.title}" added to your library!` });
+
+    res.status(201).json({
+      message: `${book.title} added to your library!`,
+    });
   } catch (err) {
-    if (err.code === 11000) return res.status(400).json({ message: 'Already in your library' });
+    if (err.code === 11000) {
+      return res.status(400).json({ message: 'Already in your library' });
+    }
     res.status(500).json({ message: err.message });
   }
 });
 
-// PATCH /api/library/:bookId/shelf
+// UPDATE shelf
 router.patch('/:bookId/shelf', auth, async (req, res) => {
   const { shelf } = req.body;
   const status = shelfToStatus[shelf];
-  if (!status) return res.status(400).json({ message: `Invalid shelf: ${shelf}` });
+
+  if (!status) {
+    return res.status(400).json({ message: `Invalid shelf: ${shelf}` });
+  }
 
   try {
     await UserLibrary.findOneAndUpdate(
@@ -122,43 +149,36 @@ router.patch('/:bookId/shelf', auth, async (req, res) => {
       { status },
       { new: true }
     );
+
     res.json({ message: 'Shelf updated' });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
 
-// PATCH /api/library/:bookId/notes
+// UPDATE notes
 router.patch('/:bookId/notes', auth, async (req, res) => {
   try {
     const { notes } = req.body;
+
     await UserLibrary.findOneAndUpdate(
       { userId: req.userId, bookId: req.params.bookId },
       { notes },
       { new: true }
     );
+
     res.json({ message: 'Notes saved' });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
 
-// DELETE /api/library/:bookId
-router.delete('/:bookId', auth, async (req, res) => {
-  try {
-    await UserLibrary.findOneAndDelete({ userId: req.userId, bookId: req.params.bookId });
-    res.json({ message: 'Book removed from library' });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
-// PATCH /api/library/:bookId/status
+// UPDATE status
 router.patch('/:bookId/status', auth, async (req, res) => {
   try {
     const { status } = req.body;
-    const allowed = ['want-to-read', 'reading', 'finished'];
 
+    const allowed = ['want-to-read', 'reading', 'finished'];
     if (!allowed.includes(status)) {
       return res.status(400).json({ message: 'Invalid status' });
     }
@@ -170,6 +190,20 @@ router.patch('/:bookId/status', auth, async (req, res) => {
     );
 
     res.json({ message: 'Status updated' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// DELETE book
+router.delete('/:bookId', auth, async (req, res) => {
+  try {
+    await UserLibrary.findOneAndDelete({
+      userId: req.userId,
+      bookId: req.params.bookId,
+    });
+
+    res.json({ message: 'Book removed from library' });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
