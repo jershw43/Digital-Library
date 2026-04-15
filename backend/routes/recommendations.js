@@ -25,6 +25,8 @@ router.get('/', authMiddleware, async (req, res) => {
     const prompt = `
 You are a helpful book recommender. Based on the following books in a user's library, suggest 4 books they haven't read yet. 
 For each recommendation, provide: title, author, and a one-sentence reason why they'd enjoy it.
+Do not give more than one book in a series, and recommend sequels when appropriate.
+Keep the genre of the book close to the user's library to better represent the user's interests.
 Respond ONLY with a valid JSON array, no markdown, no extra text.
 Format: [{ "title": "...", "author": "...", "reason": "..." }]
 

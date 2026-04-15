@@ -3,7 +3,7 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 
-// ── Inline models (no separate files needed) ─────────────────────────────────
+// ── Inline models ─────────────────────────────────────────────────────────────
 
 const bookSchema = new mongoose.Schema({
   _id: String,
@@ -45,6 +45,19 @@ const auth = (req, res, next) => {
   }
 };
 
+// ── Shelf name ↔ status enum ──────────────────────────────────────────────────
+
+const shelfToStatus = {
+  'Want to Read':      'want-to-read',
+  'Currently Reading': 'reading',
+  'Finished Reading':  'finished',
+};
+const statusToShelf = {
+  'want-to-read': 'Want to Read',
+  'reading':      'Currently Reading',
+  'finished':     'Finished Reading',
+};
+
 // ── Routes ────────────────────────────────────────────────────────────────────
 
 // GET /api/library
@@ -56,8 +69,9 @@ router.get('/', auth, async (req, res) => {
 
     const books = entries.map((e) => ({
       ...e.bookId.toObject(),
-      status: e.status,
-      notes: e.notes || '',
+      shelf:   statusToShelf[e.status] || 'Want to Read',
+      status:  e.status,
+      notes:   e.notes || '',
       addedAt: e.addedAt,
     }));
     res.json(books);
@@ -68,20 +82,23 @@ router.get('/', auth, async (req, res) => {
 
 // POST /api/library
 router.post('/', auth, async (req, res) => {
-  const { book } = req.body;
+  const { book, shelf } = req.body;
   if (!book?.id) return res.status(400).json({ message: 'Book data is required' });
 
   try {
     await Book.findByIdAndUpdate(
       book.id,
-      { _id: book.id, title: book.title, author: book.author, year: book.year,
+      {
+        _id: book.id, title: book.title, author: book.author, year: book.year,
         thumbnail: book.thumbnail, description: book.description,
         publisher: book.publisher,
-        pageCount: Number.isFinite(Number(book.pageCount)) ? Number(book.pageCount) : null },
+        pageCount: Number.isFinite(Number(book.pageCount)) ? Number(book.pageCount) : null,
+      },
       { upsert: true, new: true }
     );
 
-    const entry = new UserLibrary({ userId: req.userId, bookId: book.id });
+    const status = shelfToStatus[shelf] || 'want-to-read';
+    const entry = new UserLibrary({ userId: req.userId, bookId: book.id, status });
     await entry.save();
 
     res.status(201).json({ message: `"${book.title}" added to your library!` });
@@ -91,11 +108,19 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
-// DELETE /api/library/:bookId
-router.delete('/:bookId', auth, async (req, res) => {
+// PATCH /api/library/:bookId/shelf
+router.patch('/:bookId/shelf', auth, async (req, res) => {
+  const { shelf } = req.body;
+  const status = shelfToStatus[shelf];
+  if (!status) return res.status(400).json({ message: `Invalid shelf: ${shelf}` });
+
   try {
-    await UserLibrary.findOneAndDelete({ userId: req.userId, bookId: req.params.bookId });
-    res.json({ message: 'Book removed from library' });
+    await UserLibrary.findOneAndUpdate(
+      { userId: req.userId, bookId: req.params.bookId },
+      { status },
+      { new: true }
+    );
+    res.json({ message: 'Shelf updated' });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -111,6 +136,16 @@ router.patch('/:bookId/notes', auth, async (req, res) => {
       { new: true }
     );
     res.json({ message: 'Notes saved' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// DELETE /api/library/:bookId
+router.delete('/:bookId', auth, async (req, res) => {
+  try {
+    await UserLibrary.findOneAndDelete({ userId: req.userId, bookId: req.params.bookId });
+    res.json({ message: 'Book removed from library' });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
