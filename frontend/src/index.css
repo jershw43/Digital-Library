@@ -125,8 +125,7 @@ button:disabled { opacity: 0.55; cursor: not-allowed; }
 /* ─── Inputs ───────────────────────────────────────────────────────────────── */
 input, textarea, select {
   font-family: inherit;
-  /* 16px prevents iOS Safari auto-zoom on focus */
-  font-size: 16px;
+  font-size: 16px; /* prevents iOS Safari auto-zoom on focus */
   color: var(--input-color);
   background-color: var(--bg-secondary);
   border: 2px solid var(--border);
@@ -172,7 +171,6 @@ input:focus, textarea:focus, select:focus {
 }
 
 /* ─── Header helpers ───────────────────────────────────────────────────────── */
-/* Hide username text on very small screens */
 .header-username {
   color: white;
   font-size: 0.9rem;
@@ -186,7 +184,7 @@ input:focus, textarea:focus, select:focus {
   .header-username { display: none; }
 }
 
-/* ─── Book list items (shared: Books + Library) ────────────────────────────── */
+/* ─── Book list items (shared: Library + Home) ─────────────────────────────── */
 .book-list {
   list-style: none;
   padding: 0;
@@ -206,11 +204,9 @@ input:focus, textarea:focus, select:focus {
   transition: transform 0.18s, box-shadow 0.18s;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
-  /* reset button defaults when used as <li> */
   width: 100%;
   text-align: left;
 }
-/* Hover only on devices that support it (not touch) */
 @media (hover: hover) {
   .book-item:hover {
     transform: translateY(-2px);
@@ -242,10 +238,11 @@ input:focus, textarea:focus, select:focus {
   font-weight: 600;
   display: -webkit-box;
   -webkit-line-clamp: 2;
-  line-clamp: 2;          /* ← add this */
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
 .book-meta {
   margin: 0 0 var(--space-sm);
   color: var(--text-muted);
@@ -281,7 +278,6 @@ input:focus, textarea:focus, select:focus {
   background-color: rgba(0, 0, 0, 0.55);
   display: flex;
   justify-content: center;
-  /* Sheet rises from the bottom on small screens */
   align-items: flex-end;
   z-index: 2000;
   padding: 0;
@@ -297,7 +293,6 @@ input:focus, textarea:focus, select:focus {
   max-height: 92vh;
   overflow-y: auto;
   box-shadow: 0 -4px 24px var(--shadow-md);
-  /* drag handle visual hint */
   padding-top: calc(var(--space-lg) + 4px);
   position: relative;
 }
@@ -374,7 +369,7 @@ input:focus, textarea:focus, select:focus {
   font-size: 1rem;
 }
 
-/* ─── Alert banners (error / success) ─────────────────────────────────────── */
+/* ─── Alert banners ────────────────────────────────────────────────────────── */
 .alert {
   padding: var(--space-sm) var(--space-md);
   border-radius: var(--radius-md);
@@ -467,7 +462,24 @@ input:focus, textarea:focus, select:focus {
 }
 .btn-secondary:hover { border-color: var(--accent); }
 
-/* ─── Form page sub-text (switch to login/register) ───────────────────────── */
+/* btn-accent alias (used in Library save-notes) */
+.btn-accent {
+  background-color: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 0.55em 1.1em;
+  font-size: 0.95rem;
+  font-weight: 500;
+  min-height: var(--touch-target);
+  cursor: pointer;
+  transition: background-color 0.2s, opacity 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-accent:hover  { background-color: var(--accent-hover); }
+.btn-accent:active { opacity: 0.84; }
+
+/* ─── Form page sub-text ───────────────────────────────────────────────────── */
 .switch-text {
   margin-top: var(--space-lg);
   text-align: center;
@@ -475,10 +487,145 @@ input:focus, textarea:focus, select:focus {
   font-size: 0.9rem;
 }
 
+/* ─── Scanner ──────────────────────────────────────────────────────────────── */
 body.scanner-active {
   background: transparent !important;
 }
-
 body.scanner-active #root {
   display: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SHELF FEATURE — new classes added for shelf management
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─── Shelf filter tabs (Library page top) ─────────────────────────────────── */
+.shelf-tabs {
+  display: flex;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-md);
+}
+
+.shelf-tab {
+  padding: 0.4em 1em;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background-color: var(--bg-secondary);
+  color: var(--text);
+  font-size: 0.85rem;
+  font-weight: 500;
+  min-height: unset; /* override base button min-height for pill tabs */
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s, color 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.shelf-tab:hover { border-color: var(--accent); }
+
+.shelf-tab--active {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* ─── Shelf badge (coloured pill on book cards + modal) ────────────────────── */
+.shelf-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  border: 1px solid;
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin-bottom: var(--space-xs);
+  line-height: 1.4;
+}
+
+/* ─── Inline shelf mover row (on each book card) ───────────────────────────── */
+.shelf-mover {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-top: var(--space-xs);
+  flex-wrap: wrap;
+}
+
+.shelf-mover__label {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.shelf-mover__btn {
+  padding: 4px 9px;
+  border-radius: var(--radius-sm);
+  border: 1px solid;
+  background-color: transparent;
+  font-size: 0.9rem;
+  min-height: unset; /* emoji buttons don't need full touch target */
+  cursor: pointer;
+  transition: opacity 0.18s;
+  line-height: 1;
+  -webkit-tap-highlight-color: transparent;
+}
+.shelf-mover__btn:hover  { opacity: 0.75; border-color: inherit !important; }
+.shelf-mover__btn:active { opacity: 0.6; }
+.shelf-mover__btn--active,
+.shelf-mover__btn:disabled { cursor: default; opacity: 1; }
+
+/* ─── Move-to-shelf section inside the modal ───────────────────────────────── */
+.modal-shelf-section {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.modal-shelf-section__label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin: 0 0 var(--space-sm);
+  color: var(--text);
+}
+
+.modal-shelf-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.modal-shelf-btn {
+  padding: 0.45em 1em;
+  border-radius: 20px;
+  border: 1px solid;
+  background-color: transparent;
+  font-size: 0.85rem;
+  font-weight: 500;
+  min-height: var(--touch-target);
+  cursor: pointer;
+  transition: opacity 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.modal-shelf-btn:hover  { opacity: 0.82; }
+.modal-shelf-btn:active { opacity: 0.65; }
+.modal-shelf-btn--active { font-weight: 700; }
+
+/* ─── Notes section inside modal ───────────────────────────────────────────── */
+.modal-notes {
+  margin-bottom: var(--space-md);
+}
+
+.modal-notes__label {
+  display: block;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: var(--space-xs);
+  font-size: 0.9rem;
+}
+
+/* textarea inherits from the base input rule above;
+   only override what's specific to notes */
+.modal-notes__input {
+  min-height: 120px;
+  resize: vertical;
 }

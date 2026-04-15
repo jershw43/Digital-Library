@@ -1,12 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { searchBooks } from '../services/googleBooksAPI';
-import { useLibrary } from '../context/LibraryContext';
+import { useLibrary, SHELVES } from '../context/LibraryContext';
 import { useAuth } from '../context/AuthContext';
 import { CapacitorBarcodeScanner, CapacitorBarcodeScannerTypeHint } from '@capacitor/barcode-scanner';
 import { Capacitor } from '@capacitor/core';
 
 const truncate = (str, n) => str && str.length > n ? str.slice(0, n) + '…' : str;
+
+const SHELF_COLORS = {
+  'Want to Read': '#6c63ff',
+  'Currently Reading': '#f5a623',
+  'Finished Reading': '#28a745',
+};
+
+const SHELF_ICONS = {
+  'Want to Read': '📚',
+  'Currently Reading': '📖',
+  'Finished Reading': '✅',
+};
 
 const Home = () => {
   const [query, setQuery] = useState('');
@@ -16,12 +28,13 @@ const Home = () => {
   const [hasSearched, setHasSearched] = useState(false);
   const [addingId, setAddingId] = useState(null);
   const [selectedBook, setSelectedBook] = useState(null);
+  const [shelfPickerBook, setShelfPickerBook] = useState(null);
 
   const [recommendations, setRecommendations] = useState([]);
   const [recLoading, setRecLoading] = useState(false);
   const [recError, setRecError] = useState(null);
 
-  const { library, addToLibrary, isInLibrary } = useLibrary();
+  const { library, addToLibrary, isInLibrary, getShelfForBook } = useLibrary();
   const { user, authFetch } = useAuth();
   const navigate = useNavigate();
 
@@ -94,13 +107,21 @@ const Home = () => {
     setHasSearched(false);
   };
 
-  const handleAddToLibrary = async (book) => {
+  // Opens shelf picker instead of immediately adding
+  const handleAddToLibrary = (book) => {
     if (!user) {
       navigate('/login', { state: { from: '/' } });
       return;
     }
-    setAddingId(book.id);
-    await addToLibrary(book);
+    setShelfPickerBook(book);
+    setSelectedBook(null);
+  };
+
+  const handleShelfSelect = async (shelf) => {
+    if (!shelfPickerBook) return;
+    setAddingId(shelfPickerBook.id);
+    setShelfPickerBook(null);
+    await addToLibrary(shelfPickerBook, shelf);
     setAddingId(null);
   };
 
@@ -122,51 +143,30 @@ const Home = () => {
   };
 
   const cardTitle = {
-    fontSize: '1.1rem',
-    fontWeight: 600,
-    color: 'var(--text)',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    margin: '0 0 16px 0',
+    fontSize: '1.1rem', fontWeight: 600, color: 'var(--text)',
+    display: 'flex', alignItems: 'center', gap: '8px', margin: '0 0 16px 0',
   };
 
   const searchRow = { display: 'flex', gap: '10px' };
 
   const inputStyle = {
-    flex: 1,
-    padding: '12px 16px',
-    borderRadius: '8px',
-    border: '1px solid var(--border)',
-    backgroundColor: 'var(--surface)',
-    color: 'var(--text)',
-    fontSize: '1rem',
-    outline: 'none',
+    flex: 1, padding: '12px 16px', borderRadius: '8px',
+    border: '1px solid var(--border)', backgroundColor: 'var(--surface)',
+    color: 'var(--text)', fontSize: '1rem', outline: 'none',
   };
 
   const searchBtn = {
-    padding: '12px 24px',
-    borderRadius: '8px',
-    border: 'none',
-    backgroundColor: 'var(--accent)',
-    color: '#fff',
-    fontWeight: 600,
-    fontSize: '1rem',
-    cursor: 'pointer',
-    whiteSpace: 'nowrap',
+    padding: '12px 24px', borderRadius: '8px', border: 'none',
+    backgroundColor: 'var(--accent)', color: '#fff',
+    fontWeight: 600, fontSize: '1rem', cursor: 'pointer', whiteSpace: 'nowrap',
   };
 
   const bookItemStyle = {
-    padding: '15px',
-    marginBottom: '10px',
-    backgroundColor: 'var(--surface)',
-    borderRadius: '8px',
-    boxShadow: '0 2px 4px var(--shadow)',
-    border: '1px solid var(--border)',
-    cursor: 'pointer',
-    transition: 'transform 0.2s, box-shadow 0.2s',
-    display: 'flex',
-    gap: '15px',
+    padding: '15px', marginBottom: '10px',
+    backgroundColor: 'var(--surface)', borderRadius: '8px',
+    boxShadow: '0 2px 4px var(--shadow)', border: '1px solid var(--border)',
+    cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s',
+    display: 'flex', gap: '15px',
   };
 
   const thumbnailStyle = {
@@ -174,20 +174,44 @@ const Home = () => {
     borderRadius: '4px', backgroundColor: 'var(--border)', flexShrink: 0,
   };
 
-  const addBtnStyle = (inLibrary, isAdding) => ({
-    backgroundColor: inLibrary ? '#28a745' : 'var(--accent)',
-    color: '#fff', border: 'none',
-    padding: '8px 16px', borderRadius: '5px',
+  const addBtnStyle = (inLibrary, isAdding, shelf) => ({
+    backgroundColor: inLibrary ? (SHELF_COLORS[shelf] || '#28a745') : 'var(--accent)',
+    color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '5px',
     cursor: inLibrary || isAdding ? 'default' : 'pointer',
     fontSize: '0.9rem', opacity: isAdding ? 0.7 : 1,
-    transition: 'background-color 0.2s',
+    transition: 'background-color 0.2s', whiteSpace: 'nowrap',
   });
 
-  const comingSoonBadge = {
-    fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.05em',
-    textTransform: 'uppercase', backgroundColor: 'var(--accent)',
-    color: '#fff', padding: '2px 8px', borderRadius: '20px',
-    marginLeft: 'auto', opacity: 0.85,
+  const closeBtnStyle = {
+    backgroundColor: 'var(--bg-secondary)', color: 'var(--text)',
+    border: '1px solid var(--border)', padding: '10px 20px',
+    borderRadius: '5px', cursor: 'pointer',
+  };
+
+  const shelfPickerOverlayStyle = {
+    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 3000,
+  };
+
+  const shelfPickerContentStyle = {
+    backgroundColor: 'var(--surface)', color: 'var(--text)',
+    border: '1px solid var(--border)', padding: '30px', borderRadius: '12px',
+    maxWidth: '380px', width: '90%', boxShadow: '0 8px 16px var(--shadow)',
+    textAlign: 'center',
+  };
+
+  const modalOverlayStyle = {
+    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 2000,
+  };
+
+  const modalContentStyle = {
+    backgroundColor: 'var(--surface)', color: 'var(--text)',
+    border: '1px solid var(--border)', padding: '30px', borderRadius: '12px',
+    maxWidth: '600px', width: '90%', maxHeight: '80vh', overflowY: 'auto',
+    boxShadow: '0 8px 16px var(--shadow)',
   };
 
   const aiGrid = {
@@ -196,7 +220,7 @@ const Home = () => {
   };
 
   const aiChip = {
-    display: 'flex', alignItems: 'center', gap: '10px',
+    display: 'flex', alignItems: 'flex-start', flexDirection: 'column', gap: '4px',
     padding: '14px 18px', backgroundColor: 'var(--surface)',
     border: '1px dashed var(--border)', borderRadius: '8px',
     color: 'var(--text-muted)', fontSize: '0.9rem', fontStyle: 'italic',
@@ -214,43 +238,15 @@ const Home = () => {
     cursor: 'pointer', transition: 'transform 0.18s, box-shadow 0.18s',
   };
 
-  const coverImg = {
-    width: '100%', height: '120px', objectFit: 'cover', backgroundColor: 'var(--border)',
-  };
+  const coverImg = { width: '100%', height: '120px', objectFit: 'cover', backgroundColor: 'var(--border)' };
+  const coverPlaceholder = { ...coverImg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', color: 'var(--text-muted)' };
 
-  const coverPlaceholder = {
-    ...coverImg, display: 'flex', alignItems: 'center',
-    justifyContent: 'center', fontSize: '2rem', color: 'var(--text-muted)',
-  };
-
-  const progressBarWrap = {
-    height: '4px', backgroundColor: 'var(--border)',
-    borderRadius: '2px', marginTop: '8px', overflow: 'hidden',
-  };
+  const progressBarWrap = { height: '4px', backgroundColor: 'var(--border)', borderRadius: '2px', marginTop: '8px', overflow: 'hidden' };
 
   const viewAllBtn = {
     marginTop: '16px', display: 'inline-block', fontSize: '0.85rem',
     color: 'var(--accent)', cursor: 'pointer', textDecoration: 'underline',
     background: 'none', border: 'none', padding: 0,
-  };
-
-  const modalOverlayStyle = {
-    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 2000,
-  };
-
-  const modalContentStyle = {
-    backgroundColor: 'var(--surface)', color: 'var(--text)',
-    border: '1px solid var(--border)', padding: '30px', borderRadius: '12px',
-    maxWidth: '600px', width: '90%', maxHeight: '80vh', overflowY: 'auto',
-    boxShadow: '0 8px 16px var(--shadow)',
-  };
-
-  const closeBtnStyle = {
-    backgroundColor: 'var(--bg-secondary)', color: 'var(--text)',
-    border: '1px solid var(--border)', padding: '10px 20px',
-    borderRadius: '5px', cursor: 'pointer',
   };
 
   // ── Render ───────────────────────────────────────────────────────────────────
@@ -294,38 +290,22 @@ const Home = () => {
           )}
         </form>
 
-      {isNative && (
-        <button
-          onClick={handleScan}
-          style={{
-            marginTop: '12px',
-            padding: '12px 24px',
-            borderRadius: '8px',
-            border: '1px solid var(--border)',
-            backgroundColor: 'var(--bg-secondary)',
-            color: 'var(--text)',
-            fontWeight: 600,
-            fontSize: '1rem',
-            cursor: 'pointer',
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px',
-          }}
-        >
-          📷 Scan ISBN Barcode
-        </button>
-      )}
-
-        {loading && (
-          <p style={{ color: 'var(--accent)', marginTop: '16px' }}>Searching for books...</p>
+        {isNative && (
+          <button
+            onClick={handleScan}
+            style={{
+              marginTop: '12px', padding: '12px 24px', borderRadius: '8px',
+              border: '1px solid var(--border)', backgroundColor: 'var(--bg-secondary)',
+              color: 'var(--text)', fontWeight: 600, fontSize: '1rem', cursor: 'pointer',
+              width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+            }}
+          >
+            📷 Scan ISBN Barcode
+          </button>
         )}
 
-        {error && !loading && (
-          <p style={{ color: 'var(--danger)', marginTop: '16px' }}>{error}</p>
-        )}
-
+        {loading && <p style={{ color: 'var(--accent)', marginTop: '16px' }}>Searching for books...</p>}
+        {error && !loading && <p style={{ color: 'var(--danger)', marginTop: '16px' }}>{error}</p>}
         {!hasSearched && !loading && (
           <p style={{ color: 'var(--text-muted)', marginTop: '16px', fontSize: '0.88rem', fontStyle: 'italic' }}>
             Search by title, author, or ISBN to get started.
@@ -336,19 +316,14 @@ const Home = () => {
           <ul style={{ listStyle: 'none', padding: 0, margin: '20px 0 0' }}>
             {books.map((book) => {
               const inLibrary = isInLibrary(book.id);
+              const shelf = getShelfForBook(book.id);
               return (
                 <li
                   key={book.id}
                   style={bookItemStyle}
                   onClick={() => setSelectedBook(book)}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                    e.currentTarget.style.boxShadow = '0 4px 8px var(--shadow)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = '0 2px 4px var(--shadow)';
-                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 4px 8px var(--shadow)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 4px var(--shadow)'; }}
                 >
                   {book.thumbnail
                     ? <img src={book.thumbnail} alt={book.title} style={thumbnailStyle} />
@@ -360,11 +335,13 @@ const Home = () => {
                       {book.author} • {book.year}
                     </p>
                     <button
-                      style={addBtnStyle(inLibrary, addingId === book.id)}
+                      style={addBtnStyle(inLibrary, addingId === book.id, shelf)}
                       disabled={inLibrary || addingId === book.id}
                       onClick={(e) => { e.stopPropagation(); handleAddToLibrary(book); }}
                     >
-                      {inLibrary ? '✓ In Library' : addingId === book.id ? 'Adding...' : '+ Add to Library'}
+                      {inLibrary
+                        ? `✓ ${shelf || 'In Library'}`
+                        : addingId === book.id ? 'Adding...' : '+ Add to Library'}
                     </button>
                   </div>
                 </li>
@@ -377,12 +354,8 @@ const Home = () => {
       {/* ── AI Recommendations ── */}
       <div style={card}>
         <p style={cardTitle}>✦ AI Recommendations</p>
-        {recLoading && (
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem' }}>Finding books you'll love...</p>
-        )}
-        {recError && (
-          <p style={{ color: 'var(--danger)', fontSize: '0.88rem' }}>{recError}</p>
-        )}
+        {recLoading && <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem' }}>Finding books you'll love...</p>}
+        {recError && <p style={{ color: 'var(--danger)', fontSize: '0.88rem' }}>{recError}</p>}
         {!recLoading && !recError && recommendations.length === 0 && (
           <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', margin: '0 0 14px' }}>
             Add books to your library to get personalised recommendations.
@@ -391,7 +364,7 @@ const Home = () => {
         {recommendations.length > 0 && (
           <div style={aiGrid}>
             {recommendations.map((rec, i) => (
-              <div key={i} style={{ ...aiChip, flexDirection: 'column', alignItems: 'flex-start', gap: '4px' }}>
+              <div key={i} style={aiChip}>
                 <strong style={{ color: 'var(--text)', fontStyle: 'normal' }}>{rec.title}</strong>
                 <span style={{ fontSize: '0.8rem' }}>by {rec.author}</span>
                 <span style={{ fontSize: '0.8rem', fontStyle: 'normal' }}>{rec.reason}</span>
@@ -416,14 +389,8 @@ const Home = () => {
                   key={book.id}
                   style={bookCard}
                   onClick={() => navigate('/library')}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-3px)';
-                    e.currentTarget.style.boxShadow = '0 6px 16px var(--shadow)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = 'none';
-                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 6px 16px var(--shadow)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
                 >
                   {book.thumbnail
                     ? <img src={book.thumbnail} alt={book.title} style={coverImg} />
@@ -433,9 +400,17 @@ const Home = () => {
                     <p style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text)', margin: '0 0 4px', lineHeight: 1.3 }}>
                       {truncate(book.title, 40)}
                     </p>
-                    <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', margin: 0 }}>
+                    <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', margin: '0 0 4px' }}>
                       {truncate(book.author, 28)}
                     </p>
+                    {book.shelf && (
+                      <span style={{
+                        fontSize: '0.65rem', fontWeight: 700, color: SHELF_COLORS[book.shelf] || 'var(--accent)',
+                        textTransform: 'uppercase', letterSpacing: '0.03em',
+                      }}>
+                        {SHELF_ICONS[book.shelf]} {book.shelf}
+                      </span>
+                    )}
                     <div style={progressBarWrap}>
                       <div style={{
                         height: '100%', width: `${book.progress ?? 0}%`,
@@ -458,6 +433,7 @@ const Home = () => {
       {selectedBook && (() => {
         const inLibrary = isInLibrary(selectedBook.id);
         const isAdding = addingId === selectedBook.id;
+        const shelf = getShelfForBook(selectedBook.id);
         return (
           <div style={modalOverlayStyle} onClick={() => setSelectedBook(null)}>
             <div style={modalContentStyle} onClick={(e) => e.stopPropagation()}>
@@ -473,17 +449,53 @@ const Home = () => {
               <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
                 <button style={closeBtnStyle} onClick={() => setSelectedBook(null)}>Close</button>
                 <button
-                  style={addBtnStyle(inLibrary, isAdding)}
+                  style={addBtnStyle(inLibrary, isAdding, shelf)}
                   disabled={inLibrary || isAdding}
                   onClick={() => handleAddToLibrary(selectedBook)}
                 >
-                  {inLibrary ? '✓ In Library' : isAdding ? 'Adding...' : '+ Add to Library'}
+                  {inLibrary ? `✓ ${shelf || 'In Library'}` : isAdding ? 'Adding...' : '+ Add to Library'}
                 </button>
               </div>
             </div>
           </div>
         );
       })()}
+
+      {/* ── Shelf Picker Modal ── */}
+      {shelfPickerBook && (
+        <div style={shelfPickerOverlayStyle} onClick={() => setShelfPickerBook(null)}>
+          <div style={shelfPickerContentStyle} onClick={(e) => e.stopPropagation()}>
+            <h3 style={{ marginTop: 0, marginBottom: '6px' }}>Add to Library</h3>
+            <p style={{ color: 'var(--text-muted)', marginBottom: '20px', fontSize: '0.95rem' }}>
+              Choose a shelf for <em>"{shelfPickerBook.title}"</em>
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {SHELVES.map((shelf) => (
+                <button
+                  key={shelf}
+                  onClick={() => handleShelfSelect(shelf)}
+                  style={{
+                    backgroundColor: SHELF_COLORS[shelf],
+                    color: '#fff', border: 'none', padding: '12px 20px',
+                    borderRadius: '8px', cursor: 'pointer',
+                    fontSize: '1rem', fontWeight: '500', transition: 'opacity 0.2s',
+                  }}
+                  onMouseEnter={(e) => (e.target.style.opacity = '0.85')}
+                  onMouseLeave={(e) => (e.target.style.opacity = '1')}
+                >
+                  {SHELF_ICONS[shelf]} {shelf}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={() => setShelfPickerBook(null)}
+              style={{ backgroundColor: 'var(--bg-secondary)', color: 'var(--text)', border: '1px solid var(--border)', padding: '10px 20px', borderRadius: '5px', cursor: 'pointer', marginTop: '16px', width: '100%' }}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
 
     </div>
   );

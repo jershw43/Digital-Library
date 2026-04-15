@@ -2,8 +2,9 @@ import { createContext, useState, useContext, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { apiUrl } from '../services/api';
 
-
 const LibraryContext = createContext();
+
+export const SHELVES = ['Want to Read', 'Currently Reading', 'Finished Reading'];
 
 export const useLibrary = () => {
   const context = useContext(LibraryContext);
@@ -30,21 +31,21 @@ export const LibraryProvider = ({ children }) => {
       .finally(() => setLibraryLoading(false));
   }, [user]);
 
-  const addToLibrary = async (book) => {
+  const addToLibrary = async (book, shelf = 'Want to Read') => {
     try {
       const res = await authFetch(apiUrl('/api/library'), {
         method: 'POST',
-        body: JSON.stringify({ book }),
+        body: JSON.stringify({ book, shelf }),
       });
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data.message); // e.g. "already in library"
+        alert(data.message);
         return;
       }
 
       // Optimistically add to local state so UI updates instantly
-      setLibrary((prev) => [{ ...book, addedAt: new Date() }, ...prev]);
+      setLibrary((prev) => [{ ...book, shelf, addedAt: new Date() }, ...prev]);
       alert(data.message);
     } catch (err) {
       alert('Failed to add book. Please try again.');
@@ -62,30 +63,47 @@ export const LibraryProvider = ({ children }) => {
     }
   };
 
-  const saveNotes = async (bookId, notes) => {
+  const moveToShelf = async (bookId, shelf) => {
     try {
-      await authFetch(`/api/library/${bookId}/notes`, {
+      await authFetch(apiUrl(`/api/library/${bookId}/shelf`), {
         method: 'PATCH',
-        body: JSON.stringify({ notes }),
+        body: JSON.stringify({ shelf }),
       });
-      // Update local state instantly so UI reflects change
-      setLibrary(prev =>
-        prev.map(b =>
-          (b.id === bookId || b._id === bookId)
-            ? { ...b, notes }
-            : b
+      setLibrary((prev) =>
+        prev.map((b) =>
+          b.id === bookId || b._id === bookId ? { ...b, shelf } : b
         )
       );
     } catch (err) {
-      Alert
-        ? Alert.alert('Error', 'Failed to save notes.')
-        : alert('Failed to save notes.');
+      alert('Failed to move book. Please try again.');
+      console.error(err);
+    }
+  };
+
+  const saveNotes = async (bookId, notes) => {
+    try {
+      await authFetch(apiUrl(`/api/library/${bookId}/notes`), {
+        method: 'PATCH',
+        body: JSON.stringify({ notes }),
+      });
+      setLibrary((prev) =>
+        prev.map((b) =>
+          b.id === bookId || b._id === bookId ? { ...b, notes } : b
+        )
+      );
+    } catch (err) {
+      alert('Failed to save notes.');
       console.error(err);
     }
   };
 
   const isInLibrary = (bookId) =>
     library.some((b) => b.id === bookId || b._id === bookId);
+
+  const getShelfForBook = (bookId) => {
+    const book = library.find((b) => b.id === bookId || b._id === bookId);
+    return book?.shelf ?? null;
+  };
 
   const clearLibrary = async () => {
     if (!window.confirm('Are you sure you want to clear your entire library?')) return;
@@ -104,7 +122,17 @@ export const LibraryProvider = ({ children }) => {
 
   return (
     <LibraryContext.Provider
-      value={{ library, libraryLoading, addToLibrary, removeFromLibrary, isInLibrary, clearLibrary, saveNotes }}
+      value={{
+        library,
+        libraryLoading,
+        addToLibrary,
+        removeFromLibrary,
+        moveToShelf,
+        saveNotes,
+        isInLibrary,
+        getShelfForBook,
+        clearLibrary,
+      }}
     >
       {children}
     </LibraryContext.Provider>
