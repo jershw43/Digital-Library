@@ -82,8 +82,11 @@ router.get('/', auth, async (req, res) => {
 
 // POST /api/library
 router.post('/', auth, async (req, res) => {
-  const { book, shelf } = req.body;
+  const { book, shelf, status} = req.body;
   if (!book?.id) return res.status(400).json({ message: 'Book data is required' });
+
+  const allowed = ['want-to-read', 'reading', 'finished'];
+  const bookStatus = allowed.includes(status) ? status : 'want-to-read';
 
   try {
     await Book.findByIdAndUpdate(
@@ -98,9 +101,8 @@ router.post('/', auth, async (req, res) => {
     );
 
     const status = shelfToStatus[shelf] || 'want-to-read';
-    const entry = new UserLibrary({ userId: req.userId, bookId: book.id, status });
+    const entry = new UserLibrary({ userId: req.userId, bookId: book.id, status: bookStatus });
     await entry.save();
-
     res.status(201).json({ message: `"${book.title}" added to your library!` });
   } catch (err) {
     if (err.code === 11000) return res.status(400).json({ message: 'Already in your library' });
@@ -146,6 +148,28 @@ router.delete('/:bookId', auth, async (req, res) => {
   try {
     await UserLibrary.findOneAndDelete({ userId: req.userId, bookId: req.params.bookId });
     res.json({ message: 'Book removed from library' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// PATCH /api/library/:bookId/status
+router.patch('/:bookId/status', auth, async (req, res) => {
+  try {
+    const { status } = req.body;
+    const allowed = ['want-to-read', 'reading', 'finished'];
+
+    if (!allowed.includes(status)) {
+      return res.status(400).json({ message: 'Invalid status' });
+    }
+
+    await UserLibrary.findOneAndUpdate(
+      { userId: req.userId, bookId: req.params.bookId },
+      { status },
+      { new: true }
+    );
+
+    res.json({ message: 'Status updated' });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

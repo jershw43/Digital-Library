@@ -12,7 +12,6 @@ dependencies {
     implementation project(':capacitor-mlkit-barcode-scanning')
     implementation project(':capacitor-barcode-scanner')
     implementation project(':capacitor-preferences')
-    implementation project(':capacitor-status-bar')
 
 }
 

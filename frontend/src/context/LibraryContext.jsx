@@ -31,27 +31,21 @@ export const LibraryProvider = ({ children }) => {
       .finally(() => setLibraryLoading(false));
   }, [user]);
 
-  const addToLibrary = async (book, shelf = 'Want to Read') => {
+  const addToLibrary = async (book, status = 'want-to-read') => {
     try {
       const res = await authFetch(apiUrl('/api/library'), {
         method: 'POST',
-        body: JSON.stringify({ book, shelf }),
+        body: JSON.stringify({ book, status }),
       });
       const data = await res.json();
-
-      if (!res.ok) {
-        alert(data.message);
-        return;
-      }
-
-      // Optimistically add to local state so UI updates instantly
-      setLibrary((prev) => [{ ...book, shelf, addedAt: new Date() }, ...prev]);
-      alert(data.message);
-    } catch (err) {
-      alert('Failed to add book. Please try again.');
-      console.error(err);
-    }
-  };
+        if (!res.ok) { alert(data.message); return; }
+          setLibrary((prev) => [{ ...book, status, addedAt: new Date() }, ...prev]);
+          alert(data.message);
+        } catch (err) {
+          alert('Failed to add book. Please try again.');
+          console.error(err);
+        }
+      };
 
   const removeFromLibrary = async (bookId) => {
     try {
@@ -97,6 +91,23 @@ export const LibraryProvider = ({ children }) => {
     }
   };
 
+  const updateStatus = async (bookId, status) => {
+    try {
+      await authFetch(apiUrl(`/api/library/${bookId}/status`), {
+        method: 'PATCH',
+        body: JSON.stringify({ status }),
+      });
+      setLibrary((prev) =>
+        prev.map((b) =>
+          (b.id === bookId || b._id === bookId) ? { ...b, status } : b
+        )
+      );
+    } catch (err) {
+      alert('Failed to update status.');
+      console.error(err);
+    }
+  };
+
   const isInLibrary = (bookId) =>
     library.some((b) => b.id === bookId || b._id === bookId);
 
@@ -122,17 +133,7 @@ export const LibraryProvider = ({ children }) => {
 
   return (
     <LibraryContext.Provider
-      value={{
-        library,
-        libraryLoading,
-        addToLibrary,
-        removeFromLibrary,
-        moveToShelf,
-        saveNotes,
-        isInLibrary,
-        getShelfForBook,
-        clearLibrary,
-      }}
+      value = {{ library, libraryLoading, addToLibrary, removeFromLibrary, isInLibrary, clearLibrary, saveNotes, updateStatus }}
     >
       {children}
     </LibraryContext.Provider>
