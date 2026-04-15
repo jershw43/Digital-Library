@@ -1,0 +1,16 @@
+{
+	"appId": "com.yourteam.digitallibrary",
+	"appName": "Digital Library",
+	"webDir": "dist",
+	"server": {
+		"cleartext": true,
+		"allowNavigation": [
+			"*"
+		]
+	},
+	"packageClassList": [
+		"BarcodeScannerPlugin",
+		"CapacitorBarcodeScannerPlugin",
+		"PreferencesPlugin"
+	]
+}
