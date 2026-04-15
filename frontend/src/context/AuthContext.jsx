@@ -55,17 +55,16 @@ export const AuthProvider = ({ children }) => {
   };
 
   const authFetch = (url, options = {}) => {
-    const base = import.meta.env.VITE_API_URL || ''; 
-    const { headers, ...rest } = options;
-    return fetch(`${base}${url}`, {                    
-      ...rest,
-      headers: {
-        'Content-Type': 'application/json',
-        ...(user?.token && { Authorization: `Bearer ${user.token}` }),
-        ...headers,
-      },
-    });
-  };
+  const base = import.meta.env.VITE_API_URL ?? '';
+  return fetch(`${base}${url}`, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(user?.token && { Authorization: `Bearer ${user.token}` }),
+      ...options.headers,
+    },
+  });
+};
 
   return (
     <AuthContext.Provider value={{ user, login, logout, authFetch, loading }}>
