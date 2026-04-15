@@ -1,0 +1,14 @@
+[
+	{
+		"pkg": "@capacitor-mlkit/barcode-scanning",
+		"classpath": "io.capawesome.capacitorjs.plugins.mlkit.barcodescanning.BarcodeScannerPlugin"
+	},
+	{
+		"pkg": "@capacitor/barcode-scanner",
+		"classpath": "com.capacitorjs.barcodescanner.CapacitorBarcodeScannerPlugin"
+	},
+	{
+		"pkg": "@capacitor/preferences",
+		"classpath": "com.capacitorjs.plugins.preferences.PreferencesPlugin"
+	}
+]
