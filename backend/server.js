@@ -3,22 +3,10 @@ const cors = require('cors');
 require('dotenv').config();
 const connectDB = require('./db');
 
-<<<<<<< HEAD
-=======
-// Load .env explicitly from server.js directory
-require('dotenv').config({ path: path.join(__dirname, '.env') });
-
-// Confirm env loaded — remove these logs once working
-console.log('JWT_SECRET set:', !!process.env.JWT_SECRET);
-console.log('MONGODB_URI set:', !!process.env.MONGODB_URI);
-
-const connectDB = require('./config/db');
->>>>>>> parent of 6ce091e (Fixed server access to books)
 const app = express();
 
 connectDB();
 
-<<<<<<< HEAD
 app.use(cors({
   origin: [
     'http://localhost:5173',
@@ -26,12 +14,6 @@ app.use(cors({
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-=======
-// backend/server.js
-app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
->>>>>>> parent of 6ce091e (Fixed server access to books)
   credentials: true,
 }));
 app.use(express.json());
