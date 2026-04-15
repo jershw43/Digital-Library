@@ -2,10 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 
-// Load .env explicitly from server.js directory
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
-// Confirm env loaded — remove these logs once working
 console.log('JWT_SECRET set:', !!process.env.JWT_SECRET);
 console.log('MONGODB_URI set:', !!process.env.MONGODB_URI);
 
@@ -14,12 +12,16 @@ const app = express();
 
 connectDB();
 
-// backend/server.js
-app.use(cors({
+const corsOptions = {
   origin: process.env.FRONTEND_URL || 'http://localhost:5173',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
-}));
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // handle preflight for all routes
+
 app.use(express.json());
 
 app.get('/', (req, res) => {
