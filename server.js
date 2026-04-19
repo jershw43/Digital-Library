@@ -17,9 +17,12 @@ connectDB();
 app.use(cors({
   origin: [
     'http://localhost:5173',
-    'https://digital-library-frontend-258f.onrender.com'
+    'https://digital-library-frontend-258f.onrender.com',
+    'capacitor://localhost',
+    'ionic://localhost',
+    'http://localhost',
   ],
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 }));

@@ -12,7 +12,7 @@ app.use(cors({
     'http://localhost:5173',
     'https://digital-library-frontend-258f.onrender.com'
   ],
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 }));

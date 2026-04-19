@@ -5,10 +5,10 @@ const VerifyEmail = () => {
   const [searchParams] = useSearchParams();
   const [status, setStatus] = useState('verifying');
   const [message, setMessage] = useState('');
-  const hasFetched = useRef(false); // Prevents double-fire in React StrictMode
+  const hasFetched = useRef(false);
 
   useEffect(() => {
-    if (hasFetched.current) return; // Guard: only run once
+    if (hasFetched.current) return;
     hasFetched.current = true;
 
     const token = searchParams.get('token');
@@ -20,7 +20,7 @@ const VerifyEmail = () => {
 
     const API_BASE = import.meta.env.VITE_API_URL || '';
 
-    fetch(`${API_BASE}/api/auth/verify-email?token=${token}`)
+    fetch(`${API_BASE}/api/auth/verify-email?token=${encodeURIComponent(token)}`)
       .then(async (res) => {
         const data = await res.json();
         if (res.ok) {

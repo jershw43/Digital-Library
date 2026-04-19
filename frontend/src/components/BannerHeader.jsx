@@ -6,7 +6,7 @@ const BannerHeader = ({ title, menuItems, user, onLogout, onLogin }) => {
   const headerStyle = {
     backgroundColor: '#007bff',
     color: 'white',
-    paddingTop: 'max(12px, env(safe-area-inset-top))',
+    paddingTop: 'calc(env(safe-area-inset-top) + 12px)',
     paddingBottom: '12px',
     paddingLeft: 'max(20px, env(safe-area-inset-left))',
     paddingRight: 'max(20px, env(safe-area-inset-right))',
@@ -20,18 +20,18 @@ const BannerHeader = ({ title, menuItems, user, onLogout, onLogin }) => {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    minHeight: '64px',
+    minHeight: 'calc(env(safe-area-inset-top) + 64px)',
   };
 
   const titleStyle = {
     margin: '0',
-    fontSize: 'clamp(1.2rem, 4vw, 2rem)', // ← shrinks gracefully on mobile
+    fontSize: 'clamp(1.2rem, 4vw, 2rem)',
     flex: 1,
     textAlign: 'center',
   };
 
   const menuContainerStyle = {
-    position: 'relative', // ← needed for dropdown to anchor here
+    position: 'relative',
     flexShrink: 0,
   };
 
@@ -77,7 +77,7 @@ const BannerHeader = ({ title, menuItems, user, onLogout, onLogin }) => {
     display: 'flex',
     alignItems: 'center',
     gap: '12px',
-    flexShrink: 0,  // ← never squish the login button
+    flexShrink: 0,
   };
 
   const usernameStyle = {

@@ -9,7 +9,6 @@ export const useAuth = () => {
   return context;
 };
 
-// React Native safe JWT decoder
 const getTokenExpiry = (token) => {
   try {
     const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
@@ -27,7 +26,7 @@ const getTokenExpiry = (token) => {
   }
 };
 
-export const API_BASE = 'http://Y10.2.37.58:5001';
+export const API_BASE = 'https://digital-library-k9ix.onrender.com';
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -68,6 +67,7 @@ export const AuthProvider = ({ children }) => {
 
   const authFetch = (path, options = {}) => {
     const { headers, ...rest } = options;
+    console.log('authFetch URL:', `${API_BASE}${path}`);
     return fetch(`${API_BASE}${path}`, {
       ...rest,
       headers: {

@@ -13,8 +13,9 @@ const truncate = (str, n) => str && str.length > n ? str.slice(0, n) + '…' : s
 const styles = {
   page: {
     padding: '20px',
+    paddingTop: '20px',
     maxWidth: '900px',
-    margin: '100px auto 60px',
+    margin: '0 auto 60px',
   },
   card: {
     backgroundColor: 'var(--bg-secondary)',
@@ -36,9 +37,10 @@ const styles = {
   searchRow: {
     display: 'flex',
     gap: '10px',
+    flexWrap: 'wrap',
   },
   input: {
-    flex: 1,
+    flex: '1 1 100%',
     padding: '12px 16px',
     borderRadius: '8px',
     border: '1px solid var(--border)',
@@ -46,6 +48,7 @@ const styles = {
     color: 'var(--text)',
     fontSize: '1rem',
     outline: 'none',
+    minWidth: '0',
   },
   btn: {
     padding: '12px 24px',
@@ -57,6 +60,8 @@ const styles = {
     fontSize: '1rem',
     cursor: 'pointer',
     whiteSpace: 'nowrap',
+    flex: '1 1 auto',
+    minWidth: '80px',
   },
   btnSecondary: {
     padding: '12px 24px',
@@ -68,6 +73,8 @@ const styles = {
     fontSize: '1rem',
     cursor: 'pointer',
     whiteSpace: 'nowrap',
+    flex: '1 1 auto',
+    minWidth: '80px',
   },
   scanBtn: {
     marginTop: '12px',
@@ -345,7 +352,7 @@ const Home = () => {
     const isAdding  = addingId === book.id;
     return (
       <div
-        style={{ display: 'flex', gap: '8px' }}
+        style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}
         onClick={stopProp ? (e) => e.stopPropagation() : undefined}
       >
         <button
@@ -440,7 +447,7 @@ const Home = () => {
                   ? <img src={book.thumbnail} alt={book.title} style={styles.thumbnail} />
                   : <div style={styles.thumbnailPlaceholder}>📖</div>
                 }
-                <div style={{ flex: 1 }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
                   <h3 style={{ margin: '0 0 4px', color: 'var(--text)', fontSize: '1rem' }}>{book.title}</h3>
                   <p style={{ margin: '0 0 10px', color: 'var(--text-muted)', fontSize: '0.88rem' }}>
                     {book.author} • {book.year}

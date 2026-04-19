@@ -1,6 +1,18 @@
 import React from 'react';
+import { Capacitor } from '@capacitor/core';
+import { Browser } from '@capacitor/browser';
 
 const About = () => {
+  const handleLink = async (e) => {
+    e.preventDefault();
+    const url = 'https://jershw43.github.io/Digital-Library/index.html';
+    if (Capacitor.isNativePlatform()) {
+      await Browser.open({ url });
+    } else {
+      window.open(url, '_blank');
+    }
+  };
+
   return (
     <div style={{ marginTop: '100px', padding: '20px' }}>
       <h2>About Page</h2>
@@ -10,9 +22,9 @@ const About = () => {
       <p>Camron Mellott</p>
       <p>Luke Joseph</p>
       <p>Learn more about our Digital Library.</p>
-      <a href="https://jershw43.github.io/Digital-Library/index.html">
+      <a href="https://jershw43.github.io/Digital-Library/index.html" onClick={handleLink}>
         View Full Project Details
-      </a>    
+      </a>
     </div>
   );
 };

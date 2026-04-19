@@ -6,6 +6,13 @@
 		"cleartext": true,
 		"allowNavigation": [
 			"*"
-		]
+		],
+		"hostname": "app",
+		"androidScheme": "https"
+	},
+	"plugins": {
+		"CapacitorHttp": {
+			"enabled": true
+		}
 	}
 }

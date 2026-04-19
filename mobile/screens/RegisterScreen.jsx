@@ -3,6 +3,7 @@ import {
   View, Text, TextInput, TouchableOpacity,
   StyleSheet, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView,
 } from 'react-native';
+import { useAuth } from '../context/AuthContext';
 
 const validatePassword = (password) => {
   if (password.length < 8) return 'Password must be at least 8 characters';
@@ -11,6 +12,7 @@ const validatePassword = (password) => {
 };
 
 export default function RegisterScreen({ navigation }) {
+  const { authFetch } = useAuth();
   const [form, setForm]             = useState({ username: '', email: '', password: '', confirm: '' });
   const [errors, setErrors]         = useState({});
   const [serverError, setServerError] = useState('');
@@ -37,9 +39,8 @@ export default function RegisterScreen({ navigation }) {
     if (!validate()) return;
     setLoading(true);
     try {
-      const res  = await fetch('http://localhost:5001/api/auth/register', {
+      const res  = await authFetch('/api/auth/register', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: form.username, email: form.email, password: form.password }),
       });
       const text = await res.text();

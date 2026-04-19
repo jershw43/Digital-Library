@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useLibrary } from '../context/LibraryContext';
+import { Capacitor } from '@capacitor/core';
 
 const TABS = [
   { key: 'reading', label: 'In Progress', emoji: '📖', color: '#fd7e14' },
@@ -13,6 +14,8 @@ const Library = () => {
   const [activeTab, setActiveTab] = useState('reading');
   const [selectedBook, setSelectedBook] = useState(null);
   const [notes, setNotes] = useState('');
+
+  const isNative = Capacitor.isNativePlatform();
 
   const openModal = (book) => {
     setSelectedBook(book);
@@ -39,8 +42,10 @@ const Library = () => {
     (b) => (b.status || 'want-to-read') === activeTab
   );
 
+  const activeTabData = TABS.find((t) => t.key === activeTab);
+
   return (
-    <div className="page-container">
+    <div className="page-container" style={{ paddingTop: '16px' }}>
 
       {/* Header */}
       <div className="library-header">
@@ -57,41 +62,70 @@ const Library = () => {
         )}
       </div>
 
-      {/* Tabs */}
-      <div style={{
-        display: 'flex',
-        gap: '8px',
-        marginBottom: '24px',
-        borderBottom: '2px solid var(--border)',
-      }}>
-        {TABS.map((tab) => {
-          const count = library.filter(
-            (b) => (b.status || 'want-to-read') === tab.key
-          ).length;
-
-          const isActive = activeTab === tab.key;
-
-          return (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              style={{
-                padding: '10px 20px',
-                border: 'none',
-                borderBottom: isActive
-                  ? `3px solid ${tab.color}`
-                  : '3px solid transparent',
-                backgroundColor: 'transparent',
-                color: isActive ? tab.color : 'var(--text-muted)',
-                fontWeight: isActive ? 700 : 400,
-                cursor: 'pointer',
-              }}
-            >
-              {tab.emoji} {tab.label} ({count})
-            </button>
-          );
-        })}
-      </div>
+      {/* Tabs — dropdown on mobile, tab bar on web */}
+      {isNative ? (
+        <div style={{ marginBottom: '24px' }}>
+          <select
+            value={activeTab}
+            onChange={(e) => setActiveTab(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '10px 14px',
+              borderRadius: '8px',
+              border: `2px solid ${activeTabData?.color || 'var(--border)'}`,
+              backgroundColor: 'var(--bg-secondary)',
+              color: activeTabData?.color || 'var(--text)',
+              fontSize: '1rem',
+              fontWeight: 600,
+            }}
+          >
+            {TABS.map((tab) => {
+              const count = library.filter(
+                (b) => (b.status || 'want-to-read') === tab.key
+              ).length;
+              return (
+                <option key={tab.key} value={tab.key}>
+                  {tab.emoji} {tab.label} ({count})
+                </option>
+              );
+            })}
+          </select>
+        </div>
+      ) : (
+        <div style={{
+          display: 'flex',
+          gap: '8px',
+          marginBottom: '24px',
+          borderBottom: '2px solid var(--border)',
+        }}>
+          {TABS.map((tab) => {
+            const count = library.filter(
+              (b) => (b.status || 'want-to-read') === tab.key
+            ).length;
+            const isActive = activeTab === tab.key;
+            return (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                style={{
+                  padding: '10px 20px',
+                  border: 'none',
+                  borderBottom: isActive
+                    ? `3px solid ${tab.color}`
+                    : '3px solid transparent',
+                  backgroundColor: 'transparent',
+                  color: isActive ? tab.color : 'var(--text-muted)',
+                  fontWeight: isActive ? 700 : 400,
+                  cursor: 'pointer',
+                  minHeight: 'unset',
+                }}
+              >
+                {tab.emoji} {tab.label} ({count})
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {/* Content */}
       {library.length === 0 ? (
@@ -113,17 +147,13 @@ const Library = () => {
               {book.thumbnail && (
                 <img src={book.thumbnail} alt="" className="book-thumbnail" />
               )}
-
-              <div style={{ flex: 1 }}>
-                <h3>{book.title}</h3>
-                <p>{book.author}</p>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <h3 style={{ margin: '0 0 4px' }}>{book.title}</h3>
+                <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.875rem' }}>{book.author}</p>
               </div>
-
               <select
                 value={book.status || 'want-to-read'}
-                onChange={(e) =>
-                  handleStatusChange(book.id ?? book._id, e.target.value)
-                }
+                onChange={(e) => handleStatusChange(book.id ?? book._id, e.target.value)}
                 onClick={(e) => e.stopPropagation()}
               >
                 <option value="want-to-read">Want to Read</option>
@@ -139,29 +169,76 @@ const Library = () => {
       {selectedBook && (
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h2>{selectedBook.title}</h2>
-            <p>{selectedBook.author}</p>
 
-            <textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Notes..."
-            />
+            {/* Title + thumbnail */}
+            <div style={{ display: 'flex', gap: '16px', marginBottom: '16px', alignItems: 'flex-start' }}>
+              {selectedBook.thumbnail && (
+                <img
+                  src={selectedBook.thumbnail}
+                  alt=""
+                  style={{ width: '70px', height: '105px', objectFit: 'cover', borderRadius: '6px', flexShrink: 0 }}
+                />
+              )}
+              <div>
+                <h2 className="modal-title" style={{ marginBottom: '4px' }}>{selectedBook.title}</h2>
+                {selectedBook.year && (
+                  <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', margin: 0 }}>{selectedBook.year}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Author */}
+            {selectedBook.author && (
+              <div style={{ marginBottom: '12px' }}>
+                <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Author</p>
+                <p style={{ margin: '2px 0 0', color: 'var(--text)' }}>{selectedBook.author}</p>
+              </div>
+            )}
+
+            {/* Description */}
+            {selectedBook.description && (
+              <div style={{ marginBottom: '12px' }}>
+                <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Description</p>
+                <p style={{ margin: '2px 0 0', color: 'var(--text)', fontSize: '0.9rem', lineHeight: '1.6' }}>{selectedBook.description}</p>
+              </div>
+            )}
+
+            {/* Pages */}
+            {selectedBook.pageCount && (
+              <div style={{ marginBottom: '12px' }}>
+                <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Pages</p>
+                <p style={{ margin: '2px 0 0', color: 'var(--text)' }}>{selectedBook.pageCount}</p>
+              </div>
+            )}
+
+            {/* Notes */}
+            <div style={{ marginBottom: '16px' }}>
+              <p style={{ margin: '0 0 6px', fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Notes</p>
+              <textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Add your notes here..."
+                className="modal-notes__input"
+                style={{ width: '100%' }}
+              />
+            </div>
 
             <div className="modal-actions">
-              <button onClick={closeModal}>Close</button>
+              <button className="btn-secondary" onClick={closeModal}>Close</button>
               <button
+                className="btn-accent"
                 onClick={async () => {
                   await saveNotes(selectedBook.id || selectedBook._id, notes);
                   closeModal();
                 }}
               >
-                Save
+                Save Notes
               </button>
-              <button onClick={() => handleRemove(selectedBook)}>
+              <button className="btn-danger" onClick={() => handleRemove(selectedBook)}>
                 Remove
               </button>
             </div>
+
           </div>
         </div>
       )}

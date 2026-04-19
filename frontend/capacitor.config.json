@@ -4,6 +4,13 @@
   "webDir": "dist",
   "server": {
     "cleartext": true,
-    "allowNavigation": ["*"]
+    "allowNavigation": ["*"],
+    "hostname": "app",
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "CapacitorHttp": {
+      "enabled": true
+    }
   }
 }

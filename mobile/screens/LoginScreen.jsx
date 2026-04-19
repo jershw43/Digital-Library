@@ -3,10 +3,10 @@ import {
   View, Text, TextInput, TouchableOpacity,
   StyleSheet, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView,
 } from 'react-native';
-import { useAuth } from '../context/AuthContext';
+import { useAuth, API_BASE } from '../context/AuthContext';
 
 export default function LoginScreen({ navigation }) {
-  const { login } = useAuth();
+  const { login, authFetch } = useAuth();
   const [form, setForm]       = useState({ email: '', password: '' });
   const [error, setError]     = useState('');
   const [loading, setLoading] = useState(false);
@@ -21,16 +21,20 @@ export default function LoginScreen({ navigation }) {
     if (!form.email || !form.password) { setError('Please fill in all fields'); return; }
     setLoading(true);
     try {
-      const res  = await fetch('/api/auth/login', {
+      console.log('Attempting login to:', API_BASE + '/api/auth/login');
+      const res  = await authFetch('/api/auth/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       });
+      console.log('Response status:', res.status);
       const data = await res.json();
+      console.log('Response data:', data);
       if (!res.ok) throw new Error(data.message || 'Login failed');
       await login(data.token, data.username);
       navigation.replace('Main');
     } catch (err) {
+      console.log('Login error:', err.message);
+      console.log('Full error:', err);
       setError(err.message);
     } finally {
       setLoading(false);

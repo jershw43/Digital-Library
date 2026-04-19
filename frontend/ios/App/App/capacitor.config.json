@@ -6,11 +6,20 @@
 		"cleartext": true,
 		"allowNavigation": [
 			"*"
-		]
+		],
+		"hostname": "app",
+		"androidScheme": "https"
+	},
+	"plugins": {
+		"CapacitorHttp": {
+			"enabled": true
+		}
 	},
 	"packageClassList": [
 		"BarcodeScannerPlugin",
 		"CapacitorBarcodeScannerPlugin",
-		"PreferencesPlugin"
+		"CAPBrowserPlugin",
+		"PreferencesPlugin",
+		"StatusBarPlugin"
 	]
 }
