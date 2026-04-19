@@ -88,11 +88,19 @@ router.get('/', auth, async (req, res) => {
 
 // ADD book
 router.post('/', auth, async (req, res) => {
+<<<<<<< Updated upstream
   const { book, status } = req.body;
 
   if (!book?.id) {
     return res.status(400).json({ message: 'Book data is required' });
   }
+
+  const allowed = ['want-to-read', 'reading', 'finished'];
+  const bookStatus = allowed.includes(status) ? status : 'want-to-read';
+=======
+  const { book, status } = req.body;   // ← destructure status
+  if (!book?.id) return res.status(400).json({ message: 'Book data is required' });
+>>>>>>> Stashed changes
 
   const allowed = ['want-to-read', 'reading', 'finished'];
   const bookStatus = allowed.includes(status) ? status : 'want-to-read';
@@ -114,6 +122,7 @@ router.post('/', auth, async (req, res) => {
       },
       { upsert: true, new: true }
     );
+<<<<<<< Updated upstream
 
     const entry = new UserLibrary({
       userId: req.userId,
@@ -126,6 +135,11 @@ router.post('/', auth, async (req, res) => {
     res.status(201).json({
       message: `${book.title} added to your library!`,
     });
+=======
+    const entry = new UserLibrary({ userId: req.userId, bookId: book.id, status: bookStatus });
+    await entry.save();
+    res.status(201).json({ message: `"${book.title}" added to your library!` });
+>>>>>>> Stashed changes
   } catch (err) {
     if (err.code === 11000) {
       return res.status(400).json({ message: 'Already in your library' });
@@ -173,6 +187,7 @@ router.patch('/:bookId/notes', auth, async (req, res) => {
   }
 });
 
+<<<<<<< Updated upstream
 // UPDATE status
 router.patch('/:bookId/status', auth, async (req, res) => {
   try {
@@ -182,19 +197,32 @@ router.patch('/:bookId/status', auth, async (req, res) => {
     if (!allowed.includes(status)) {
       return res.status(400).json({ message: 'Invalid status' });
     }
+=======
+// PATCH /api/library/:bookId/status
+router.patch('/:bookId/status', auth, async (req, res) => {
+  try {
+    const { status } = req.body;
+    const allowed = ['want-to-read', 'reading', 'finished'];
+    if (!allowed.includes(status))
+      return res.status(400).json({ message: 'Invalid status' });
+>>>>>>> Stashed changes
 
     await UserLibrary.findOneAndUpdate(
       { userId: req.userId, bookId: req.params.bookId },
       { status },
       { new: true }
     );
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
     res.json({ message: 'Status updated' });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
 
+<<<<<<< Updated upstream
 // DELETE book
 router.delete('/:bookId', auth, async (req, res) => {
   try {
@@ -210,3 +238,6 @@ router.delete('/:bookId', auth, async (req, res) => {
 });
 
 module.exports = router;
+=======
+module.exports = router;
+>>>>>>> Stashed changes
