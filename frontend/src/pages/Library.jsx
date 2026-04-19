@@ -58,14 +58,12 @@ const Library = () => {
       </div>
 
       {/* Tabs */}
-      <div
-        style={{
-          display: 'flex',
-          gap: '8px',
-          marginBottom: '24px',
-          borderBottom: '2px solid var(--border)',
-        }}
-      >
+      <div style={{
+        display: 'flex',
+        gap: '8px',
+        marginBottom: '24px',
+        borderBottom: '2px solid var(--border)',
+      }}>
         {TABS.map((tab) => {
           const count = library.filter(
             (b) => (b.status || 'want-to-read') === tab.key
@@ -87,39 +85,22 @@ const Library = () => {
                 color: isActive ? tab.color : 'var(--text-muted)',
                 fontWeight: isActive ? 700 : 400,
                 cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
               }}
             >
-              {tab.emoji} {tab.label}
-              <span
-                style={{
-                  backgroundColor: isActive ? tab.color : 'var(--border)',
-                  color: isActive ? '#fff' : 'var(--text-muted)',
-                  borderRadius: '12px',
-                  padding: '1px 8px',
-                  fontSize: '0.75rem',
-                  fontWeight: 700,
-                }}
-              >
-                {count}
-              </span>
+              {tab.emoji} {tab.label} ({count})
             </button>
           );
         })}
       </div>
 
-      {/* Book list */}
+      {/* Content */}
       {library.length === 0 ? (
         <div className="empty-state">
-          <p>Your library is empty. Start adding books from the home page!</p>
+          <p>Your library is empty.</p>
         </div>
       ) : activeBooks.length === 0 ? (
         <div className="empty-state">
-          <p style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>
-            No books in this category yet.
-          </p>
+          <p>No books in this category.</p>
         </div>
       ) : (
         <ul className="book-list">
@@ -130,38 +111,25 @@ const Library = () => {
               onClick={() => openModal(book)}
             >
               {book.thumbnail && (
-                <img
-                  src={book.thumbnail}
-                  alt={book.title}
-                  className="book-thumbnail"
-                />
+                <img src={book.thumbnail} alt="" className="book-thumbnail" />
               )}
 
-              <div className="book-info" style={{ flex: 1 }}>
-                <h3 className="book-title">{book.title}</h3>
-                <p className="book-meta">
-                  {book.author} • {book.year}
-                </p>
+              <div style={{ flex: 1 }}>
+                <h3>{book.title}</h3>
+                <p>{book.author}</p>
               </div>
 
-              <div
+              <select
+                value={book.status || 'want-to-read'}
+                onChange={(e) =>
+                  handleStatusChange(book.id ?? book._id, e.target.value)
+                }
                 onClick={(e) => e.stopPropagation()}
-                style={{ display: 'flex', alignItems: 'center' }}
               >
-                <select
-                  value={book.status || 'want-to-read'}
-                  onChange={(e) =>
-                    handleStatusChange(
-                      book.id ?? book._id,
-                      e.target.value
-                    )
-                  }
-                >
-                  <option value="want-to-read">Want to Read</option>
-                  <option value="reading">In Progress</option>
-                  <option value="finished">Completed</option>
-                </select>
-              </div>
+                <option value="want-to-read">Want to Read</option>
+                <option value="reading">In Progress</option>
+                <option value="finished">Completed</option>
+              </select>
             </li>
           ))}
         </ul>
@@ -170,38 +138,27 @@ const Library = () => {
       {/* Modal */}
       {selectedBook && (
         <div className="modal-overlay" onClick={closeModal}>
-          <div
-            className="modal-content"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 className="modal-title">{selectedBook.title}</h2>
-            <p><strong>Author:</strong> {selectedBook.author}</p>
-            <p><strong>Year:</strong> {selectedBook.year}</p>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2>{selectedBook.title}</h2>
+            <p>{selectedBook.author}</p>
 
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Add notes..."
-              style={{ width: '100%', minHeight: '120px' }}
+              placeholder="Notes..."
             />
 
             <div className="modal-actions">
               <button onClick={closeModal}>Close</button>
               <button
                 onClick={async () => {
-                  await saveNotes(
-                    selectedBook.id || selectedBook._id,
-                    notes
-                  );
+                  await saveNotes(selectedBook.id || selectedBook._id, notes);
                   closeModal();
                 }}
               >
                 Save
               </button>
-              <button
-                className="btn-danger"
-                onClick={() => handleRemove(selectedBook)}
-              >
+              <button onClick={() => handleRemove(selectedBook)}>
                 Remove
               </button>
             </div>

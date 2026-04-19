@@ -108,6 +108,23 @@ export const LibraryProvider = ({ children }) => {
     }
   };
 
+  const updateStatus = async (bookId, status) => {
+    try {
+      await authFetch(apiUrl(`/api/library/${bookId}/status`), {
+        method: 'PATCH',
+        body: JSON.stringify({ status }),
+      });
+      setLibrary((prev) =>
+        prev.map((b) =>
+          (b.id === bookId || b._id === bookId) ? { ...b, status } : b
+        )
+      );
+    } catch (err) {
+      alert('Failed to update status.');
+      console.error(err);
+    }
+  };
+
   const isInLibrary = (bookId) =>
     library.some((b) => b.id === bookId || b._id === bookId);
 
