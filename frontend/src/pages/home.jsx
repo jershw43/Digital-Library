@@ -8,19 +8,12 @@ import { Capacitor } from '@capacitor/core';
 
 const truncate = (str, n) => str && str.length > n ? str.slice(0, n) + '…' : str;
 
-// ── Styles ────────────────────────────────────────────────────────────────────
-
 const styles = {
   page: {
     padding: '20px',
-<<<<<<< Updated upstream
     paddingTop: '20px',
     maxWidth: '900px',
     margin: '0 auto 60px',
-=======
-    maxWidth: '900px',
-    margin: '100px auto 60px',
->>>>>>> Stashed changes
   },
   card: {
     backgroundColor: 'var(--bg-secondary)',
@@ -42,16 +35,10 @@ const styles = {
   searchRow: {
     display: 'flex',
     gap: '10px',
-<<<<<<< Updated upstream
     flexWrap: 'wrap',
   },
   input: {
     flex: '1 1 100%',
-=======
-  },
-  input: {
-    flex: 1,
->>>>>>> Stashed changes
     padding: '12px 16px',
     borderRadius: '8px',
     border: '1px solid var(--border)',
@@ -59,10 +46,7 @@ const styles = {
     color: 'var(--text)',
     fontSize: '1rem',
     outline: 'none',
-<<<<<<< Updated upstream
     minWidth: '0',
-=======
->>>>>>> Stashed changes
   },
   btn: {
     padding: '12px 24px',
@@ -74,11 +58,8 @@ const styles = {
     fontSize: '1rem',
     cursor: 'pointer',
     whiteSpace: 'nowrap',
-<<<<<<< Updated upstream
     flex: '1 1 auto',
     minWidth: '80px',
-=======
->>>>>>> Stashed changes
   },
   btnSecondary: {
     padding: '12px 24px',
@@ -90,11 +71,8 @@ const styles = {
     fontSize: '1rem',
     cursor: 'pointer',
     whiteSpace: 'nowrap',
-<<<<<<< Updated upstream
     flex: '1 1 auto',
     minWidth: '80px',
-=======
->>>>>>> Stashed changes
   },
   scanBtn: {
     marginTop: '12px',
@@ -254,8 +232,6 @@ const addBtnStyle = (inLibrary, isAdding) => ({
   transition: 'background-color 0.2s',
 });
 
-// ── Component ─────────────────────────────────────────────────────────────────
-
 const Home = () => {
   const [query, setQuery]               = useState('');
   const [books, setBooks]               = useState([]);
@@ -277,8 +253,6 @@ const Home = () => {
 
   const isNative = Capacitor.isNativePlatform();
 
-  // ── Effects ──────────────────────────────────────────────────────────────────
-
   useEffect(() => {
     if (location.state?.scannedBook) {
       setBooks([location.state.scannedBook]);
@@ -295,8 +269,6 @@ const Home = () => {
       .catch(() => setRecError('Could not load recommendations.'))
       .finally(() => setRecLoading(false));
   }, [user, library]);
-
-  // ── Handlers ─────────────────────────────────────────────────────────────────
 
   const handleScan = async () => {
     try {
@@ -360,23 +332,15 @@ const Home = () => {
     setStatusModalBook(null);
   };
 
-  // ── Derived values ───────────────────────────────────────────────────────────
-
   const firstName   = user?.displayName?.split(' ')[0] ?? user?.email?.split('@')[0] ?? 'Reader';
   const recentBooks = library.slice(0, 5);
-
-  // ── Sub-components ───────────────────────────────────────────────────────────
 
   const BookButtons = ({ book, stopProp = true }) => {
     const inLibrary = isInLibrary(book.id);
     const isAdding  = addingId === book.id;
     return (
       <div
-<<<<<<< Updated upstream
         style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}
-=======
-        style={{ display: 'flex', gap: '8px' }}
->>>>>>> Stashed changes
         onClick={stopProp ? (e) => e.stopPropagation() : undefined}
       >
         <button
@@ -398,12 +362,9 @@ const Home = () => {
     );
   };
 
-  // ── Render ───────────────────────────────────────────────────────────────────
-
   return (
     <div style={styles.page}>
 
-      {/* Greeting */}
       <h1 style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--text)', marginBottom: '4px' }}>
         Welcome back, {firstName} 👋
       </h1>
@@ -411,10 +372,9 @@ const Home = () => {
         What are we reading today?
       </p>
 
-      {/* ── Search card ── */}
+      {/* Search card */}
       <div style={styles.card}>
         <p style={styles.cardTitle}>Find a Book</p>
-
         <form onSubmit={handleSearch} style={styles.searchRow}>
           <input
             style={styles.input}
@@ -471,11 +431,7 @@ const Home = () => {
                   ? <img src={book.thumbnail} alt={book.title} style={styles.thumbnail} />
                   : <div style={styles.thumbnailPlaceholder}>📖</div>
                 }
-<<<<<<< Updated upstream
                 <div style={{ flex: 1, minWidth: 0 }}>
-=======
-                <div style={{ flex: 1 }}>
->>>>>>> Stashed changes
                   <h3 style={{ margin: '0 0 4px', color: 'var(--text)', fontSize: '1rem' }}>{book.title}</h3>
                   <p style={{ margin: '0 0 10px', color: 'var(--text-muted)', fontSize: '0.88rem' }}>
                     {book.author} • {book.year}
@@ -488,10 +444,9 @@ const Home = () => {
         )}
       </div>
 
-      {/* ── AI Recommendations card ── */}
+      {/* AI Recommendations card */}
       <div style={styles.card}>
         <p style={styles.cardTitle}>✦ AI Recommendations</p>
-
         {recLoading && (
           <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem' }}>Finding books you'll love...</p>
         )}
@@ -516,10 +471,9 @@ const Home = () => {
         )}
       </div>
 
-      {/* ── My Library shelf card ── */}
+      {/* My Library shelf card */}
       <div style={styles.card}>
         <p style={styles.cardTitle}>My Library</p>
-
         {recentBooks.length === 0 ? (
           <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontStyle: 'italic' }}>
             You haven't added any books yet. Search above to get started!
@@ -566,7 +520,7 @@ const Home = () => {
         )}
       </div>
 
-      {/* ── Book detail modal ── */}
+      {/* Book detail modal */}
       {selectedBook && (() => {
         const inLibrary = isInLibrary(selectedBook.id);
         const isAdding  = addingId === selectedBook.id;
@@ -595,7 +549,7 @@ const Home = () => {
         );
       })()}
 
-      {/* ── Status picker modal ── */}
+      {/* Status picker modal */}
       {statusModalBook && (
         <div style={styles.modalOverlay} onClick={() => setStatusModalBook(null)}>
           <div

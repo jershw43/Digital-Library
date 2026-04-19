@@ -36,7 +36,6 @@ export const LibraryProvider = ({ children }) => {
         body: JSON.stringify({ book, status }),
       });
       const data = await res.json();
-<<<<<<< Updated upstream
       if (!res.ok) { alert(data.message); return; }
       setLibrary((prev) => [{ ...book, status, addedAt: new Date() }, ...prev]);
       alert(data.message);
@@ -45,16 +44,6 @@ export const LibraryProvider = ({ children }) => {
       console.error(err);
     }
   };
-=======
-        if (!res.ok) { alert(data.message); return; }
-          setLibrary((prev) => [{ ...book, status, addedAt: new Date() }, ...prev]);
-          alert(data.message);
-        } catch (err) {
-          alert('Failed to add book. Please try again.');
-          console.error(err);
-        }
-      };
->>>>>>> Stashed changes
 
   const removeFromLibrary = async (bookId) => {
     try {
@@ -117,23 +106,6 @@ export const LibraryProvider = ({ children }) => {
     }
   };
 
-  const updateStatus = async (bookId, status) => {
-    try {
-      await authFetch(apiUrl(`/api/library/${bookId}/status`), {
-        method: 'PATCH',
-        body: JSON.stringify({ status }),
-      });
-      setLibrary((prev) =>
-        prev.map((b) =>
-          (b.id === bookId || b._id === bookId) ? { ...b, status } : b
-        )
-      );
-    } catch (err) {
-      alert('Failed to update status.');
-      console.error(err);
-    }
-  };
-
   const isInLibrary = (bookId) =>
     library.some((b) => b.id === bookId || b._id === bookId);
 
@@ -159,11 +131,7 @@ export const LibraryProvider = ({ children }) => {
 
   return (
     <LibraryContext.Provider
-<<<<<<< Updated upstream
       value={{ library, libraryLoading, addToLibrary, removeFromLibrary, isInLibrary, clearLibrary, saveNotes, updateStatus }}
-=======
-      value = {{ library, libraryLoading, addToLibrary, removeFromLibrary, isInLibrary, clearLibrary, saveNotes, updateStatus }}
->>>>>>> Stashed changes
     >
       {children}
     </LibraryContext.Provider>
