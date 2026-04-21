@@ -36,6 +36,15 @@ const Home = () => {
   const [recLoading, setRecLoading] = useState(false);
   const [recError, setRecError] = useState(null);
 
+  // ── Mobile detection ─────────────────────────────────────────────────────────
+  const [isMobile, setIsMobile] = useState(() => window.matchMedia('(max-width: 640px)').matches);
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 640px)');
+    const handler = (e) => setIsMobile(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+
   const { library, addToLibrary, isInLibrary } = useLibrary();
   const getShelfForBook = () => null;
   const { user, authFetch } = useAuth();
@@ -119,7 +128,7 @@ const Home = () => {
               pageCount: info.pageCount || null,
             };
           } catch {
-            return rec; // fallback to Gemini data if lookup fails
+            return rec;
           }
         })
       );
@@ -157,7 +166,6 @@ const Home = () => {
     setHasSearched(false);
   };
 
-  // Opens shelf picker instead of immediately adding
   const handleAddToLibrary = (book) => {
     if (!user) {
       navigate('/login', { state: { from: '/' } });
@@ -264,18 +272,6 @@ const Home = () => {
     boxShadow: '0 8px 16px var(--shadow)',
   };
 
-  const aiGrid = {
-    display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
-    gap: '12px', marginTop: '4px',
-  };
-
-  const aiChip = {
-    display: 'flex', alignItems: 'flex-start', flexDirection: 'column', gap: '4px',
-    padding: '14px 18px', backgroundColor: 'var(--surface)',
-    border: '1px dashed var(--border)', borderRadius: '8px',
-    color: 'var(--text-muted)', fontSize: '0.9rem', fontStyle: 'italic',
-  };
-
   const shelfGrid = {
     display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))',
     gap: '16px', marginTop: '4px',
@@ -302,7 +298,9 @@ const Home = () => {
   // ── Render ───────────────────────────────────────────────────────────────────
 
   const firstName = user?.username ?? user?.email?.split('@')[0] ?? 'Reader';
-  const recentBooks = library.slice(0, 6);
+
+  // Show 3 books on mobile, 5 on desktop
+  const recentBooks = library.slice(0, isMobile ? 3 : 5);
 
   return (
     <div style={page}>
@@ -403,7 +401,14 @@ const Home = () => {
 
       {/* ── AI Recommendations ── */}
       <div style={card}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+        <div style={{
+          display: 'flex',
+          flexDirection: isMobile ? 'column' : 'row',
+          alignItems: isMobile ? 'flex-start' : 'center',
+          justifyContent: 'space-between',
+          gap: isMobile ? '12px' : '0',
+          marginBottom: '16px',
+        }}>
           <p style={{ ...cardTitle, margin: 0 }}>✦ AI Recommendations</p>
           <button
             onClick={fetchRecommendations}
@@ -413,6 +418,7 @@ const Home = () => {
               backgroundColor: 'var(--accent)', color: '#fff',
               fontWeight: 600, fontSize: '0.88rem', cursor: recLoading ? 'not-allowed' : 'pointer',
               opacity: recLoading ? 0.7 : 1, whiteSpace: 'nowrap',
+              width: isMobile ? '100%' : 'auto',
             }}
           >
             {recLoading ? 'Finding books…' : recommendations.length > 0 ? '🔄 Refresh' : '✦ Get Recommendations'}
