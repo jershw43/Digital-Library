@@ -1,4 +1,6 @@
+// force rebuild
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+
 import './App.css';
 import BannerHeader from './components/BannerHeader';
 import Home from './pages/home';
@@ -7,6 +9,8 @@ import Library from './pages/Library';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import VerifyEmail from './pages/VerifyEmail';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import { LibraryProvider } from './context/LibraryContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -41,6 +45,8 @@ function AppContent() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route
           path="/library"
           element={
