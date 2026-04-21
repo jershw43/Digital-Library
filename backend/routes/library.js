@@ -11,15 +11,18 @@ router.get('/', authMiddleware, async (req, res) => {
       .populate('bookId')
       .sort({ addedAt: -1 });
 
-    const books = entries.map((entry) => ({
-      ...entry.bookId.toObject(),
-      status: entry.status,
-      notes: entry.notes || '',
-      addedAt: entry.addedAt,
-    }));
+    const books = entries
+      .filter((entry) => entry.bookId != null) // guard against orphaned entries
+      .map((entry) => ({
+        ...entry.bookId.toObject(),
+        status: entry.status,
+        notes: entry.notes || '',
+        addedAt: entry.addedAt,
+      }));
 
     res.json(books);
   } catch (err) {
+    console.error('GET /api/library error:', err.message);
     res.status(500).json({ message: err.message });
   }
 });
@@ -57,6 +60,7 @@ router.post('/', authMiddleware, async (req, res) => {
     await entry.save();
     res.status(201).json({ message: `${book.title} added to your library!` });
   } catch (err) {
+    console.error('POST /api/library error:', err.message);
     if (err.code === 11000) {
       return res.status(400).json({ message: 'Already in your library' });
     }
@@ -81,6 +85,7 @@ router.patch('/:bookId/status', authMiddleware, async (req, res) => {
 
     res.json({ message: 'Status updated' });
   } catch (err) {
+    console.error('PATCH /status error:', err.message);
     res.status(500).json({ message: err.message });
   }
 });
@@ -98,6 +103,7 @@ router.patch('/:bookId/notes', authMiddleware, async (req, res) => {
 
     res.json({ message: 'Notes saved' });
   } catch (err) {
+    console.error('PATCH /notes error:', err.message);
     res.status(500).json({ message: err.message });
   }
 });
@@ -111,6 +117,7 @@ router.delete('/:bookId', authMiddleware, async (req, res) => {
     });
     res.json({ message: 'Book removed from library' });
   } catch (err) {
+    console.error('DELETE /api/library error:', err.message);
     res.status(500).json({ message: err.message });
   }
 });

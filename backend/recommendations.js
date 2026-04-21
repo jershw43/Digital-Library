@@ -1,32 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { GoogleGenerativeAI } = require('@google/generative-ai');
-const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
-
-// ── Inline model (mirrors libraryRoutes.js) ───────────────────────────────────
-
-const userLibrarySchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  bookId: { type: String, ref: 'Book', required: true },
-  addedAt: { type: Date, default: Date.now },
-  status: { type: String, enum: ['want-to-read', 'reading', 'finished'], default: 'want-to-read' },
-  notes: String,
-});
-userLibrarySchema.index({ userId: 1, bookId: 1 }, { unique: true });
-const UserLibrary = mongoose.models.UserLibrary || mongoose.model('UserLibrary', userLibrarySchema);
-
-const bookSchema = new mongoose.Schema({
-  _id: String,
-  title: String,
-  author: String,
-  year: String,
-  thumbnail: String,
-  description: String,
-  publisher: String,
-  pageCount: { type: Number, default: null },
-});
-const Book = mongoose.models.Book || mongoose.model('Book', bookSchema);
 
 // ── Inline auth middleware ────────────────────────────────────────────────────
 
@@ -48,12 +23,11 @@ const auth = (req, res, next) => {
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-// ── GET /api/recommendations ──────────────────────────────────────────────────
+// ── POST /api/recommendations ─────────────────────────────────────────────────
 
-router.get('/', auth, async (req, res) => {
+router.post('/', auth, async (req, res) => {
   try {
-    const entries = await UserLibrary.find({ userId: req.userId }).populate('bookId');
-    const books = entries.map((e) => e.bookId).filter(Boolean);
+    const books = req.body.books || [];
 
     if (books.length === 0) {
       return res.json({ recommendations: [], message: 'Add some books to your library first!' });
@@ -75,9 +49,9 @@ User's library:
 ${libraryList}
     `.trim();
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-3-flash-preview' });
     const result = await model.generateContent(prompt);
-    const text = result.response.text();
+    const text = result.response.text().replace(/```json|```/g, '').trim();
 
     const recommendations = JSON.parse(text);
     res.json({ recommendations });
