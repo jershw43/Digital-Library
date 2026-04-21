@@ -8,6 +8,8 @@ export const useAuth = () => {
   return context;
 };
 
+const API_BASE = import.meta.env.VITE_API_URL || '';
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
     const token = localStorage.getItem('token');
@@ -27,10 +29,9 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
-  // Wrapper around fetch that automatically attaches the JWT token
   const authFetch = useCallback((url, options = {}) => {
     const token = localStorage.getItem('token');
-    return fetch(url, {
+    return fetch(`${API_BASE}${url}`, {
       ...options,
       headers: {
         'Content-Type': 'application/json',
