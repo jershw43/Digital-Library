@@ -1,32 +1,64 @@
-const API_KEY = import.meta.env.VITE_GOOGLE_BOOKS_API_KEY;
 const BASE_URL = 'https://www.googleapis.com/books/v1/volumes';
 
 export const searchBooks = async (query, maxResults = 20) => {
   try {
-    // You can work without API key initially (lower rate limit)
-    const url = API_KEY 
-      ? `${BASE_URL}?q=${encodeURIComponent(query)}&maxResults=${maxResults}&key=${API_KEY}`
-      : `${BASE_URL}?q=${encodeURIComponent(query)}&maxResults=${maxResults}`;
-    
-    const response = await fetch(url);
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch books');
-    }
-    
+    const apiKey = import.meta.env.VITE_GOOGLE_BOOKS_API_KEY;
+
+    // Request more results than needed so we have room to filter
+    const fetchCount = Math.min(maxResults * 2, 40);
+    const params = new URLSearchParams({
+      q: query,
+      maxResults: fetchCount,
+      langRestrict: 'en',
+      printType: 'books',
+      orderBy: 'relevance',
+      ...(apiKey && { key: apiKey }),
+    });
+
+    const response = await fetch(`${BASE_URL}?${params}`);
+    if (!response.ok) throw new Error('Failed to fetch books');
+
     const data = await response.json();
-    
-    // Transform the data to match your book structure
-    return data.items?.map(item => ({
-      id: item.id,
-      title: item.volumeInfo.title || 'Unknown Title',
-      author: item.volumeInfo.authors?.join(', ') || 'Unknown Author',
-      year: item.volumeInfo.publishedDate?.substring(0, 4) || 'N/A',
-      description: item.volumeInfo.description || 'No description available.',
-      thumbnail: item.volumeInfo.imageLinks?.thumbnail || null,
-      publisher: item.volumeInfo.publisher || 'Unknown Publisher',
-      pageCount: item.volumeInfo.pageCount || 'N/A',
-    })) || [];
+    if (!data.items) return [];
+
+    const results = data.items
+      // ── Filter out low-quality results ──────────────────────────────────
+      .filter((item) => {
+        const info = item.volumeInfo;
+
+        // Must have a real title and at least one author
+        if (!info.title || !info.authors?.length) return false;
+
+        // Skip books with placeholder-style titles
+        if (info.title === 'Unknown Title') return false;
+
+        // Must have a thumbnail (a good signal the entry is complete)
+        if (!info.imageLinks?.thumbnail) return false;
+
+        // Skip non-English results that slipped through langRestrict
+        const lang = info.language;
+        if (lang && lang !== 'en') return false;
+
+        return true;
+      })
+      // ── Map to your book structure ────────────────────────────────────────
+      .map((item) => {
+        const info = item.volumeInfo;
+        return {
+          id: item.id,
+          title: info.title,
+          author: info.authors.join(', '),
+          year: info.publishedDate?.substring(0, 4) || '',
+          description: info.description || '',
+          thumbnail: info.imageLinks.thumbnail.replace('http://', 'https://'),
+          publisher: info.publisher || '',
+          pageCount: info.pageCount || null,
+        };
+      })
+      // Trim to the requested max after filtering
+      .slice(0, maxResults);
+
+    return results;
   } catch (error) {
     console.error('Error fetching books:', error);
     throw error;
