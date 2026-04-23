@@ -4,7 +4,11 @@ import { searchBooks } from '../services/googleBooksAPI';
 import { useLibrary } from '../context/LibraryContext';
 import { useAuth } from '../context/AuthContext';
 
-const SHELVES = ['Want to Read', 'Currently Reading', 'Finished Reading'];
+const SHELVES = [
+  { label: 'Want to Read',     status: 'want-to-read' },
+  { label: 'In Progress',      status: 'reading'      },
+  { label: 'Completed',        status: 'finished'     },
+];
 import { CapacitorBarcodeScanner, CapacitorBarcodeScannerTypeHint } from '@capacitor/barcode-scanner';
 import { Capacitor } from '@capacitor/core';
 
@@ -12,14 +16,14 @@ const truncate = (str, n) => str && str.length > n ? str.slice(0, n) + '…' : s
 
 const SHELF_COLORS = {
   'Want to Read': '#6c63ff',
-  'Currently Reading': '#f5a623',
-  'Finished Reading': '#28a745',
+  'In Progress':  '#f5a623',
+  'Completed':    '#28a745',
 };
 
 const SHELF_ICONS = {
   'Want to Read': '📚',
-  'Currently Reading': '📖',
-  'Finished Reading': '✅',
+  'In Progress':  '📖',
+  'Completed':    '✅',
 };
 
 const Home = () => {
@@ -97,14 +101,25 @@ const Home = () => {
     setRecError(null);
     setRecommendations([]);
 
-    const books = library.map((b) => ({ title: b.title, author: b.author }));
+    const bookList = library.map((b) => ({ title: b.title, author: b.author }));
+
+    // Generate a stable fallback id when Google Books lookup fails, so the
+    // backend never receives book.id === undefined and throws "Book data is required"
+    const makeFallbackId = (rec) =>
+      `rec-${rec.title}-${rec.author}`.replace(/\s+/g, '-').toLowerCase();
 
     try {
       const res = await authFetch('/api/recommendations', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ books }),
+        body: JSON.stringify({ books: bookList }),
       });
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.message || (res.status === 429 ? 'Rate limit reached — please wait a moment and try again.' : `Server error ${res.status}`));
+      }
+     
       const data = await res.json();
       const recs = data.recommendations || [];
 
@@ -113,10 +128,12 @@ const Home = () => {
         recs.map(async (rec) => {
           try {
             const q = encodeURIComponent(`${rec.title} ${rec.author}`);
-            const gbRes = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${q}&maxResults=1&key=${import.meta.env.VITE_GOOGLE_BOOKS_API_KEY}`);
+            const gbRes = await fetch(
+              `https://www.googleapis.com/books/v1/volumes?q=${q}&maxResults=1&key=${import.meta.env.VITE_GOOGLE_BOOKS_API_KEY}`
+            );
             const gbData = await gbRes.json();
             const item = gbData.items?.[0];
-            if (!item) return rec;
+            if (!item) return { ...rec, id: makeFallbackId(rec) };
             const info = item.volumeInfo;
             return {
               ...rec,
@@ -128,14 +145,15 @@ const Home = () => {
               pageCount: info.pageCount || null,
             };
           } catch {
-            return rec;
+            return { ...rec, id: makeFallbackId(rec) };
           }
         })
       );
 
       setRecommendations(enriched);
-    } catch {
-      setRecError('Could not load recommendations. Check that your backend is running.');
+    } catch (err) {
+      console.error('Recommendations error:', err);
+      setRecError(err.message || 'Could not load recommendations. Check that your backend is running.');
     } finally {
       setRecLoading(false);
     }
@@ -434,7 +452,11 @@ const Home = () => {
         {recommendations.length > 0 && (
           <ul style={{ listStyle: 'none', padding: 0, margin: '4px 0 0' }}>
             {recommendations.map((rec, i) => {
-              const inLibrary = isInLibrary(rec.id);
+              const inLibrary = (rec.id ? isInLibrary(rec.id) : false) || library.some(
+                (b) =>
+                  b.title?.toLowerCase().trim() === rec.title?.toLowerCase().trim() &&
+                  b.author?.toLowerCase().trim() === rec.author?.toLowerCase().trim()
+              );
               return (
                 <li key={i} style={bookItemStyle}>
                   {rec.thumbnail
@@ -562,10 +584,10 @@ const Home = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {SHELVES.map((shelf) => (
                 <button
-                  key={shelf}
-                  onClick={() => handleShelfSelect(shelf)}
+                  key={shelf.status}
+                  onClick={() => handleShelfSelect(shelf.status)}
                   style={{
-                    backgroundColor: SHELF_COLORS[shelf],
+                    backgroundColor: SHELF_COLORS[shelf.label],
                     color: '#fff', border: 'none', padding: '12px 20px',
                     borderRadius: '8px', cursor: 'pointer',
                     fontSize: '1rem', fontWeight: '500', transition: 'opacity 0.2s',
@@ -573,7 +595,7 @@ const Home = () => {
                   onMouseEnter={(e) => (e.target.style.opacity = '0.85')}
                   onMouseLeave={(e) => (e.target.style.opacity = '1')}
                 >
-                  {SHELF_ICONS[shelf]} {shelf}
+                  {SHELF_ICONS[shelf.label]} {shelf.label}
                 </button>
               ))}
             </div>
