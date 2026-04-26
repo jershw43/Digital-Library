@@ -101,8 +101,11 @@ const Home = () => {
     setRecError(null);
     setRecommendations([]);
 
-    const bookList = library.map((b) => ({ title: b.title, author: b.author }));
-
+    const bookList = library.map((b) => ({
+      title: b.title,
+      author: b.author,
+      status: b.status || 'want-to-read',
+    }));
     // Generate a stable fallback id when Google Books lookup fails, so the
     // backend never receives book.id === undefined and throws "Book data is required"
     const makeFallbackId = (rec) =>
