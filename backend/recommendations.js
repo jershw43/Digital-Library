@@ -33,20 +33,35 @@ router.post('/', auth, async (req, res) => {
       return res.json({ recommendations: [], message: 'Add some books to your library first!' });
     }
 
-    const libraryList = books
-      .map((b) => `- "${b.title}" by ${b.author}`)
-      .join('\n');
+    // ── Build enriched library list with read status ───────────────────────
+    const libraryList = books.map((b) => {
+      const status =
+        b.status === 'finished'      ? 'completed' :
+        b.status === 'reading'       ? 'currently reading' :
+        b.status === 'want-to-read'  ? 'want to read' :
+                                       'want to read';
+      return `- "${b.title}" by ${b.author} [${status}]`;
+    }).join('\n');
 
+    // ── Improved prompt ───────────────────────────────────────────────────
     const prompt = `
-You are a helpful book recommender. Based on the following books in a user's library, suggest 4 books they haven't read yet.
-For each recommendation, provide: title, author, and a one-sentence reason why they'd enjoy it.
-Do not give more than one book in a series, and recommend sequels when appropriate.
-Keep the genre of the book close to the user's library to better represent the user's interests.
+You are an expert book recommender. A user has the following books in their library with read statuses:
+
+${libraryList}
+
+Recommend exactly 4 books they haven't read yet. Follow these rules strictly in order of priority:
+
+1. SERIES CONTINUATIONS FIRST: If the user has completed a book or trilogy that is part of a series, recommend the next book or trilogy in that same series. If they are currently reading a book in a series, recommend the next book in that series.
+2. GENRE MATCH: After covering series continuations, fill remaining slots with books from similar genres or by similar authors.
+3. NO DUPLICATES: Never recommend a book already in their library.
+
+Concrete examples to follow:
+- If they completed the Mistborn trilogy (The Final Empire, The Well of Ascension, The Hero of Ages), suggest "The Alloy of Law" (Mistborn Era 2, Book 1) by Brandon Sanderson.
+- If they are currently reading "Oathbringer" (Stormlight Archive Book 3), suggest "Rhythm of War" (Stormlight Archive Book 4) by Brandon Sanderson.
+- If they want to read "The Great Gatsby", suggest similar literary fiction.
+
 Respond ONLY with a valid JSON array, no markdown, no extra text.
 Format: [{ "title": "...", "author": "...", "reason": "..." }]
-
-User's library:
-${libraryList}
     `.trim();
 
     const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash-lite' });
