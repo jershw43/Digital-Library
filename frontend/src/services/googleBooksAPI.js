@@ -4,10 +4,15 @@ export const searchBooks = async (query, maxResults = 20) => {
   try {
     const apiKey = import.meta.env.VITE_GOOGLE_BOOKS_API_KEY;
 
+    // ── Build a structured query to prefer original works ──────────────────
+    // intitle: scopes the search to the title field, reducing off-topic hits
+    // (e.g. books *about* Harry Potter instead of the novels themselves)
+    const structuredQuery = `intitle:${query}`;
+
     // Request more results than needed so we have room to filter
     const fetchCount = Math.min(maxResults * 2, 40);
     const params = new URLSearchParams({
-      q: query,
+      q: structuredQuery,
       maxResults: fetchCount,
       langRestrict: 'en',
       printType: 'books',
@@ -20,6 +25,8 @@ export const searchBooks = async (query, maxResults = 20) => {
 
     const data = await response.json();
     if (!data.items) return [];
+
+    const queryWords = query.toLowerCase().split(/\s+/);
 
     const results = data.items
       // ── Filter out low-quality results ──────────────────────────────────
@@ -39,7 +46,29 @@ export const searchBooks = async (query, maxResults = 20) => {
         const lang = info.language;
         if (lang && lang !== 'en') return false;
 
+        // ── NEW: Drop results where none of the query words appear in the title
+        // This eliminates books *about* the query (studies, guides, analyses)
+        const titleLower = info.title.toLowerCase();
+        const matchCount = queryWords.filter((w) => titleLower.includes(w)).length;
+        if (matchCount === 0) return false;
+
         return true;
+      })
+      // ── NEW: Sort — exact/close title matches float above derivative works ─
+      // Prevents play adaptations, study guides, etc. from outranking the original
+      .sort((a, b) => {
+        const titleA = a.volumeInfo.title.toLowerCase();
+        const titleB = b.volumeInfo.title.toLowerCase();
+        const q = query.toLowerCase();
+
+        const score = (title) => {
+          if (title === q) return 3;                  // exact match
+          if (title.startsWith(q)) return 2;          // starts with query (e.g. "Harry Potter and the…")
+          if (title.includes(q)) return 1;            // contains full query
+          return 0;                                   // partial word match only
+        };
+
+        return score(titleB) - score(titleA);
       })
       // ── Map to your book structure ────────────────────────────────────────
       .map((item) => {
