@@ -89,7 +89,7 @@ export const searchBooks = async (query, maxResults = 20) => {
 
     return results;
   } catch (error) {
-    console.error('Error fetching books:', error);
+    console.error('Error fetching books:', error?.message ?? String(error));
     throw error;
   }
 };

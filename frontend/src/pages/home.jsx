@@ -57,29 +57,79 @@ const Home = () => {
   const isNative = Capacitor.isNativePlatform();
 
   const handleScan = async () => {
-    try {
-      const result = await CapacitorBarcodeScanner.scanBarcode({
-        hint: CapacitorBarcodeScannerTypeHint.EAN_13,
-        scanInstructions: 'Point at the barcode on the back cover',
-        scanButton: false,
-      });
-      if (result.ScanResult) {
-        setLoading(true);
-        const results = await searchBooks(`isbn:${result.ScanResult}`);
-        if (results.length > 0) {
-          setBooks(results);
-          setHasSearched(true);
-          setError(null);
-        } else {
-          setError(`No book found for ISBN: ${result.ScanResult}`);
-        }
-        setLoading(false);
-      }
-    } catch (err) {
-      console.error('Scan error:', err);
-    }
-  };
+  try {
+    const result = await CapacitorBarcodeScanner.scanBarcode({
+      hint: CapacitorBarcodeScannerTypeHint.EAN_13,
+      scanInstructions: 'Point at the barcode on the back cover',
+      scanButton: false,
+    });
+    if (result.ScanResult) {
+      setLoading(true);
+      const apiKey = import.meta.env.VITE_GOOGLE_BOOKS_API_KEY;
+      const keyParam = apiKey ? `&key=${apiKey}` : '';
 
+      // 1st attempt: Google Books ISBN-13
+      let item = null;
+      const isbnRes = await fetch(
+        `https://www.googleapis.com/books/v1/volumes?q=isbn:${result.ScanResult}&maxResults=1${keyParam}`
+      );
+      const isbnData = await isbnRes.json();
+      console.log('Google Books ISBN-13:', JSON.stringify(isbnData));
+      item = isbnData.items?.[0];
+
+      // 2nd attempt: Open Library (much better for older editions)
+      if (!item) {
+        console.log('Trying Open Library...');
+        const olRes = await fetch(
+          `https://openlibrary.org/api/books?bibkeys=ISBN:${result.ScanResult}&format=json&jscmd=data`
+        );
+        const olData = await olRes.json();
+        console.log('Open Library response:', JSON.stringify(olData));
+        const olBook = olData[`ISBN:${result.ScanResult}`];
+
+        if (olBook) {
+          item = {
+            id: `ol-${result.ScanResult}`,
+            volumeInfo: {
+              title: olBook.title,
+              authors: olBook.authors?.map(a => a.name),
+              publishedDate: olBook.publish_date,
+              description: olBook.notes || '',
+              publisher: olBook.publishers?.[0]?.name || '',
+              pageCount: olBook.number_of_pages,
+              imageLinks: { thumbnail: olBook.cover?.medium || null },
+            },
+          };
+        }
+      }
+
+      // Build book object from whichever source worked
+      if (item) {
+        const info = item.volumeInfo;
+        const book = {
+          id: item.id,
+          title: info.title || 'Unknown Title',
+          author: info.authors?.join(', ') || 'Unknown Author',
+          year: info.publishedDate?.substring(0, 4) || 'N/A',
+          description: info.description || 'No description available.',
+          thumbnail: info.imageLinks?.thumbnail || null,
+          publisher: info.publisher || 'Unknown Publisher',
+          pageCount: info.pageCount || 'N/A',
+        };
+        setBooks([book]);
+        setHasSearched(true);
+        setError(null);
+      } else {
+        setError(`No book found for ISBN: ${result.ScanResult}`);
+      }
+    }
+  } catch (err) {
+    console.error('Scan error:', err?.message ?? err);
+    setError('Scan failed. Please try again.');
+  } finally {
+    setLoading(false);
+  }
+};
   const location = useLocation();
   useEffect(() => {
     if (location.state?.scannedBook) {
